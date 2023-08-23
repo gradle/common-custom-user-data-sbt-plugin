@@ -1,0 +1,7 @@
+.idea/
+.bsp/
+.tmp/
+to/
+build/
+target/
+*.DS_Store

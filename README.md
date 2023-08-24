@@ -4,7 +4,7 @@
 > - _[Gradle Enterprise Build Validation Scripts][ge-build-validation-scripts]_
 > - _[Gradle Enterprise Open Source Projects][ge-oss-projects]_
 > - _[Common Custom User Data Maven Extension][ccud-maven-extension]_
-> - _[Common Custom User Data Gradle Plugin][ccud-gradle-plugin] (this repository)_
+> - _[Common Custom User Data Gradle Plugin][ccud-gradle-plugin]_
 > - _[Android Cache Fix Gradle Plugin][android-cache-fix-plugin]_
 
 # Common Custom User Data Scala Plugin

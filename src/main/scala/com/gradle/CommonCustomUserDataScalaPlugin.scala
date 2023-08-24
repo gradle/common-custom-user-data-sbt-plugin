@@ -11,11 +11,11 @@ object CommonCustomUserDataScalaPlugin extends AutoPlugin {
     }
 
     import autoImport._
-//    override def requires: Plugins = com.gradle.enterprise.sbt.GradleEnterprisePlugin
 
-    // This plugin is automatically enabled for projects which are JvmPlugin.
+    override def requires: Plugins = com.gradle.enterprise.sbt.GradleEnterprisePlugin
+
+    // This plugin is automatically enabled for projects which are GradleEnterprisePlugin.
     override def trigger = allRequirements
-
 
     override lazy val globalSettings: Seq[Setting[_]] = Seq(
         helloGreeting := "hi",

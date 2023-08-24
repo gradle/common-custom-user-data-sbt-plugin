@@ -1,46 +1,51 @@
 import Dependencies._
 
-ThisBuild / scalaVersion     := "2.12.8"
-ThisBuild / version          := "0.1.0-SNAPSHOT"
-ThisBuild / organization     := "com.gradle"
+ThisBuild / scalaVersion := "2.12.8"
+ThisBuild / version := "0.1.0-SNAPSHOT"
+ThisBuild / organization := "com.gradle"
 ThisBuild / organizationName := "gradle"
 
+sbtPlugin := true
+publishMavenStyle := true
+
 Global / gradleEnterpriseConfiguration :=
-    GradleEnterpriseConfiguration(
-        server = Server(
-            url = Some(url("https://ge.solutions-team.gradle.com"))
-        ),
-        buildScan = BuildScan(
-            obfuscation = Obfuscation(
-                ipAddresses = _.map(_ => "0.0.0.0")
-            ),
-            backgroundUpload = !sys.env.contains("CI"),
-            publishConfig = PublishConfig.Always,
-            tags = Set(
-                if (sys.env.contains("CI")) "CI" else "Local",
-                sys.props("os.name")
-            ),
-            links = Map(
-                "VCS" -> url(s"https://github.com/ribafish/common-custom-user-data-scala-plugin/tree/${sys.props("vcs.branch")}")
-            ),
-            values = Map(
-                "Scala version" -> scalaVersion.value
-            )
-        )
+  GradleEnterpriseConfiguration(
+    server = Server(
+      url = Some(url("https://ge.solutions-team.gradle.com"))
+    ),
+    buildScan = BuildScan(
+      obfuscation = Obfuscation(
+        ipAddresses = _.map(_ => "0.0.0.0")
+      ),
+      backgroundUpload = !sys.env.contains("CI"),
+      publishConfig = PublishConfig.Always,
+      tags = Set(
+        if (sys.env.contains("CI")) "CI" else "Local",
+        sys.props("os.name")
+      ),
+      links = Map(
+        "VCS" -> url(s"https://github.com/ribafish/common-custom-user-data-scala-plugin/tree/${sys.props("vcs.branch")}")
+      ),
+      values = Map(
+        "Scala version" -> scalaVersion.value
+      )
     )
+  )
 
 lazy val commonCustomUserDataScalaPlugin = (project in file("."))
-    .enablePlugins(SbtPlugin)
-    .settings(
-        name := "common-custom-user-data-scala-plugin",
-        libraryDependencies += scalaTest % Test,
-//        libraryDependencies += gradleEnterprise,
-        pluginCrossBuild / sbtVersion := {
-            scalaBinaryVersion.value match {
-                case "2.12" => "1.2.8" // set minimum sbt version
-            }
-        }
-    )
+  .enablePlugins(SbtPlugin)
+  .settings(
+    name := "common-custom-user-data-scala-plugin",
+    libraryDependencies ++= Seq(
+      scalaTest % Test,
+    ),
+    pluginCrossBuild / sbtVersion := {
+      scalaBinaryVersion.value match {
+        case "2.12" => "1.2.8" // set minimum sbt version
+      }
+    },
+    addSbtPlugin(gradleEnterprisePlugin)
+  )
 
 // Uncomment the following for publishing to Sonatype.
 // See https://www.scala-sbt.org/1.x/docs/Using-Sonatype.html for more detail.

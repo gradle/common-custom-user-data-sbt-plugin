@@ -19,16 +19,6 @@ Global / gradleEnterpriseConfiguration :=
       ),
       backgroundUpload = !sys.env.contains("CI"),
       publishConfig = PublishConfig.Always,
-      tags = Set(
-        if (sys.env.contains("CI")) "CI" else "Local",
-        sys.props("os.name")
-      ),
-      links = Map(
-        "VCS" -> url(s"https://github.com/ribafish/common-custom-user-data-scala-plugin/tree/${sys.props("vcs.branch")}")
-      ),
-      values = Map(
-        "Scala version" -> scalaVersion.value
-      )
     )
   )
 

@@ -11,6 +11,7 @@ object CustomBuildScanEnhancements {
 
   private val SYSTEM_PROP_IDEA_VENDOR_NAME = "idea.vendor.name"
   private val SYSTEM_PROP_IDEA_VERSION = "idea.version"
+  private val SYSTEM_PROP_IDEA_MANAGED = "idea.managed"
   private val SYSTEM_PROP_ECLIPSE_BUILD_ID = "eclipse.buildId"
   private val SYSTEM_PROP_IDEA_SYNC_ACTIVE = "idea.sync.active"
 
@@ -35,6 +36,9 @@ object CustomBuildScanEnhancements {
       else if (sysProperty(SYSTEM_PROP_IDEA_VERSION).isDefined) {
         // this case should be handled by the ideaVendorName condition but keeping it for compatibility reason (ideaVendorName started with 2020.1)
         tagIde("IntelliJ IDEA", sysProperty(SYSTEM_PROP_IDEA_VERSION).get)
+      }
+      else if (sysProperty(SYSTEM_PROP_IDEA_MANAGED).isDefined) {
+        tagIde("IntelliJ IDEA", "")
       }
       else if (sysProperty(SYSTEM_PROP_ECLIPSE_BUILD_ID).isDefined) tagIde("Eclipse", sysProperty(SYSTEM_PROP_ECLIPSE_BUILD_ID).get)
       else buildScan.tag("Cmd Line")

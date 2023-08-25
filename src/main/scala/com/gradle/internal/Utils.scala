@@ -1,9 +1,12 @@
 package com.gradle.internal
 
-import java.io.UnsupportedEncodingException
+import java.io.{IOException, UnsupportedEncodingException}
 import java.net.{URI, URISyntaxException, URLEncoder}
 import java.nio.charset.StandardCharsets
 import java.util.regex.Pattern
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent._
+import scala.sys.process._
 
 object Utils {
 
@@ -14,6 +17,7 @@ object Utils {
   private[gradle] def booleanSysPropertyOrEnvVariable(sysPropertyName: String): Option[Boolean] = booleanSysPropertyOrEnvVariable(sysPropertyName, toEnvVarName(sysPropertyName))
 
   private def toEnvVarName(sysPropertyName: String) = sysPropertyName.toUpperCase.replace('.', '_')
+
   private[gradle] def sysPropertyOrEnvVariable(sysPropertyName: String, envVarName: String): Option[String] = {
     val prop = sysProperty(sysPropertyName)
     if (prop.isDefined) prop else envVariable(envVarName)
@@ -76,6 +80,55 @@ object Utils {
       Some(new URI(scheme, host, path, null))
     } catch {
       case _: URISyntaxException => None
+    }
+  }
+
+  private[gradle] def redactUserInfo(url: String) = try {
+    val userInfo = new URI(url).getUserInfo
+    if (userInfo == null) url
+    else url.replace(userInfo + '@', "******@")
+  } catch {
+    case _: URISyntaxException => url
+  }
+
+  private[gradle] def execAndCheckSuccess(args: String*): Boolean = {
+    val cmd = args.mkString(" ")
+    val p = cmd.run() // start asynchronously
+    val f = Future(blocking(p.exitValue())) // wrap in Future
+    try {
+      Await.result(f, duration.Duration(10, "sec")) == 0
+    } catch {
+      case _: TimeoutException =>
+        p.destroy()
+        p.exitValue()
+        false
+    }
+  }
+
+  private[gradle] def execAndGetStdOut(args: String*): Option[String] = {
+    val cmd = args.mkString(" ")
+
+    val output = StringBuilder.newBuilder
+    val logger = new ProcessLogger {
+      def out(s: => String): Unit = {
+        output.append(s).append("\n")
+      }
+
+      def err(s: => String): Unit = {} // ignore
+
+      def buffer[T](f: => T): T = f
+    }
+    val p = cmd.run(logger) // start asynchronously
+    val f = Future(blocking(p.exitValue())) // wrap in Future
+    try {
+      if (Await.result(f, duration.Duration(10, "sec")) != 0) None
+      else Some(trimAtEnd(output.result()))
+    } catch {
+      case _: TimeoutException =>
+        p.destroy()
+        p.exitValue()
+        None
+      case _@(_: IOException | _: InterruptedException) => None
     }
   }
 }

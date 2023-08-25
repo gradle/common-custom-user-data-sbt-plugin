@@ -1,6 +1,7 @@
 package com.gradle.internal
 
-import sbt.URL
+import com.gradle.enterprise.sbt.GradleEnterprisePlugin.autoImport.Server
+import sbt.{URL, url}
 
 import scala.collection.mutable
 
@@ -17,12 +18,12 @@ object CustomBuildScanConfig {
     tags ++= newTags
   }
 
-  def link(key: String, link: URL): Unit = {
-    links += key -> link
+  def link(key: String, link: String): Unit = {
+    links += key -> url(link)
   }
 
-  def links(newLinks: Map[String, URL]): Unit = {
-    links ++= newLinks
+  def links(newLinks: Map[String, String]): Unit = {
+    links ++= newLinks.mapValues(url)
   }
 
   def addValue(key: String, value: String): Unit = {
@@ -48,6 +49,11 @@ object CustomServerConfig {
 
   def allowUntrusted_=(newValue: Boolean): Unit = {
     _allowUntrusted = Some(newValue)
+  }
+
+  def fromServer(server: Server): Unit = {
+    _url = server.url
+    _allowUntrusted = Some(server.allowUntrusted)
   }
 }
 

@@ -23,9 +23,10 @@ object CommonCustomUserDataScalaPlugin extends AutoPlugin {
     val scan = currentConfiguration.buildScan
     val server = currentConfiguration.server
 
+    CustomServerConfig.fromServer(server)
+    Overrides.apply()
     CustomBuildScanConfig.addValue("Scala version", scalaVersion)
     CustomBuildScanEnhancements.apply()
-    Overrides.apply()
 
     currentConfiguration.copy(
       buildScan = scan.copy(

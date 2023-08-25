@@ -20,6 +20,8 @@ object CustomBuildScanEnhancements {
   def apply(): Unit = {
     captureOs()
     captureIde()
+    captureCiOrLocal()
+    captureCiMetadata()
     captureGitMetadata()
   }
 
@@ -45,6 +47,14 @@ object CustomBuildScanEnhancements {
 
       if (sysProperty(SYSTEM_PROP_IDEA_SYNC_ACTIVE).isDefined) buildScan.tag("IDE sync")
     }
+  }
+
+  private def captureCiOrLocal(): Unit = {
+    buildScan.tag(if (isCi()) "CI" else "LOCAL")
+  }
+
+  private def captureCiMetadata(): Unit = {
+    // TODO
   }
 
   private def captureGitMetadata(): Unit = {

@@ -1,6 +1,6 @@
 import Dependencies._
 
-ThisBuild / scalaVersion := "2.12.8"
+ThisBuild / scalaVersion := "2.12.15"
 ThisBuild / version := "0.1.0-SNAPSHOT"
 ThisBuild / organization := "com.gradle"
 ThisBuild / organizationName := "gradle"
@@ -14,6 +14,7 @@ Global / gradleEnterpriseConfiguration :=
       url = Some(url("https://ge.solutions-team.gradle.com"))
     ),
     buildScan = BuildScan(
+      tags = Set(),
       obfuscation = Obfuscation(
         ipAddresses = _.map(_ => "0.0.0.0")
       ),
@@ -22,16 +23,17 @@ Global / gradleEnterpriseConfiguration :=
     )
   )
 
-lazy val commonCustomUserDataScalaPlugin = (project in file("."))
+
+lazy val sbtCommonCustomUserDataPlugin = (project in file("."))
   .enablePlugins(SbtPlugin)
   .settings(
-    name := "common-custom-user-data-scala-plugin",
+    name := "sbt-common-custom-user-data",
     libraryDependencies ++= Seq(
       scalaTest % Test,
     ),
     pluginCrossBuild / sbtVersion := {
       scalaBinaryVersion.value match {
-        case "2.12" => "1.2.8" // set minimum sbt version
+        case "2.12" => "1.6.0" // set minimum sbt version - best to keep it in sync with the GE plugin
       }
     },
     addSbtPlugin(gradleEnterprisePlugin)

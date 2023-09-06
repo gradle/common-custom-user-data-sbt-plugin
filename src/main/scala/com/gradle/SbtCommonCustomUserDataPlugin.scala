@@ -6,7 +6,7 @@ import com.gradle.internal.{CustomBuildScanConfig, CustomBuildScanEnhancements, 
 import sbt.Keys._
 import sbt._
 
-object CommonCustomUserDataScalaPlugin extends AutoPlugin {
+object SbtCommonCustomUserDataPlugin extends AutoPlugin {
 
   override def requires: Plugins = com.gradle.enterprise.sbt.GradleEnterprisePlugin
 

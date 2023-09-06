@@ -9,6 +9,8 @@
 
 # Common Custom User Data Scala Plugin
 
+Note: this needs java 8/11 to build.
+
 TODO
 
 ## Changelog

@@ -13,7 +13,7 @@ object SbtCommonCustomUserDataPlugin extends AutoPlugin {
   // This plugin is automatically enabled for projects which have GradleEnterprisePlugin.
   override def trigger = allRequirements
 
-  override lazy val projectSettings: Seq[Setting[_]] = Seq(
+  override lazy val buildSettings: Seq[Setting[_]] = Seq(
     GradleEnterprisePlugin.autoImport.gradleEnterpriseConfiguration := applyCCUD(
       GradleEnterprisePlugin.autoImport.gradleEnterpriseConfiguration.value,
       scalaVersion.value)

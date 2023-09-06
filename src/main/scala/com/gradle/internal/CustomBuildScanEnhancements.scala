@@ -7,15 +7,13 @@ import sbt.URL
 /**
  * Adds a standard set of useful tags, links and custom values to all build scans published.
  */
-object CustomBuildScanEnhancements {
+class CustomBuildScanEnhancements(buildScan: CustomBuildScanConfig, serverConfig: CustomServerConfig) {
 
   private val SYSTEM_PROP_IDEA_VENDOR_NAME = "idea.vendor.name"
   private val SYSTEM_PROP_IDEA_VERSION = "idea.version"
   private val SYSTEM_PROP_IDEA_MANAGED = "idea.managed"
   private val SYSTEM_PROP_ECLIPSE_BUILD_ID = "eclipse.buildId"
   private val SYSTEM_PROP_IDEA_SYNC_ACTIVE = "idea.sync.active"
-
-  private val buildScan = CustomBuildScanConfig
 
   def apply(): Unit = {
     captureOs()
@@ -176,6 +174,6 @@ object CustomBuildScanEnhancements {
     }
   }
 
-  private def getServer(): Option[URL] = CustomServerConfig.url
+  private def getServer(): Option[URL] = serverConfig.url
 
 }

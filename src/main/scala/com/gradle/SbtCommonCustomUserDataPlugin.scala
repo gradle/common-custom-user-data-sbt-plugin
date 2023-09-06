@@ -23,20 +23,22 @@ object SbtCommonCustomUserDataPlugin extends AutoPlugin {
     val scan = currentConfiguration.buildScan
     val server = currentConfiguration.server
 
-    CustomServerConfig.fromServer(server)
-    Overrides.apply()
-    CustomBuildScanConfig.addValue("Scala version", scalaVersion)
-    CustomBuildScanEnhancements.apply()
+    val customServerConfig = new CustomServerConfig().fromServer(server)
+    val customBuildScanConfig = new CustomBuildScanConfig()
+    customBuildScanConfig.addValue("Scala version", scalaVersion)
+
+    new Overrides(customServerConfig).apply()
+    new CustomBuildScanEnhancements(customBuildScanConfig, customServerConfig).apply()
 
     currentConfiguration.copy(
       buildScan = scan.copy(
-        tags = scan.tags ++ CustomBuildScanConfig.tags,
-        links = scan.links ++ CustomBuildScanConfig.links,
-        values = scan.values ++ CustomBuildScanConfig.values
+        tags = scan.tags ++ customBuildScanConfig.tags,
+        links = scan.links ++ customBuildScanConfig.links,
+        values = scan.values ++ customBuildScanConfig.values
       ),
       server = server.copy(
-        url = CustomServerConfig.url.orElse(server.url),
-        allowUntrusted = CustomServerConfig.allowUntrusted.getOrElse(server.allowUntrusted)
+        url = customServerConfig.url.orElse(server.url),
+        allowUntrusted = customServerConfig.allowUntrusted.getOrElse(server.allowUntrusted)
       )
     )
   }

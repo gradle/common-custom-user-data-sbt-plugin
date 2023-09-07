@@ -1,8 +1,9 @@
 package com.gradle.internal
 
-import java.io.{IOException, UnsupportedEncodingException}
+import java.io.{FileInputStream, IOException, InputStream, UnsupportedEncodingException}
 import java.net.{URI, URISyntaxException, URLEncoder}
 import java.nio.charset.StandardCharsets
+import java.util.Properties
 import java.util.regex.Pattern
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent._
@@ -131,4 +132,16 @@ object Utils {
       case _@(_: IOException | _: InterruptedException) => None
     }
   }
+
+    private[gradle] def readPropertiesFile(name: String) = {
+        val input = new FileInputStream(name)
+        try {
+            val properties = new Properties
+            properties.load(input)
+            properties
+        } catch {
+            case e: IOException =>
+                throw new RuntimeException(e)
+        } finally if (input != null) input.close()
+    }
 }

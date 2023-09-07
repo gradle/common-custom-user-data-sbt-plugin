@@ -19,11 +19,15 @@ class CustomBuildScanConfig {
   }
 
   def link(key: String, link: String): Unit = {
-    links += key -> url(link)
+      try {
+          links += key -> url(link)
+      } catch {
+          case _: java.lang.IllegalArgumentException => {} // Ignore
+      }
   }
 
   def links(newLinks: Map[String, String]): Unit = {
-    links ++= newLinks.mapValues(url)
+      newLinks.foreach( pair => link(pair._1, pair._2) )
   }
 
   def addValue(key: String, value: String): Unit = {

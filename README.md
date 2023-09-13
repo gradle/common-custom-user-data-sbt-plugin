@@ -11,7 +11,15 @@
 
 Note: this needs java 8/11 to build.
 
-TODO
+TODO: Write a description
+
+## Compatibility matrix
+
+| GE sbt plugin | sbt CCUD plugin (this) version |
+|---------------|--------------------------------|
+| 0.9           | 0.1.0                          |
+| 0.10          | 0.1.1                          |
+
 
 ## Changelog
 

@@ -94,7 +94,7 @@ class CustomBuildScanEnhancements(buildScan: CustomBuildScanConfig, serverConfig
                       val configProperties = readPropertiesFile(teamcityConfigFile.get)
                       val teamCityServerUrl = Option.apply(configProperties.getProperty("teamcity.serverUrl"))
                       if (isNotEmpty(teamCityServerUrl)) {
-                          val buildUrl: String = appendIfMissing(teamCityServerUrl.get, '/') + "viewLog.html?buildId=" + urlEncode(teamCityBuildId.get)
+                          val buildUrl: String = appendIfMissing(teamCityServerUrl.get, '/') + "viewLog.html?buildId=" + urlEncode(teamCityBuildId.get).get
                           buildScan.link("TeamCity build", buildUrl)
                       }
                   }

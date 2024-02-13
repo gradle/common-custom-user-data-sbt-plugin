@@ -1,25 +1,25 @@
 package com.gradle
 
-import com.gradle.enterprise.sbt.GradleEnterprisePlugin
-import com.gradle.enterprise.sbt.GradleEnterprisePlugin.autoImport.GradleEnterpriseConfiguration
+import com.gradle.develocity.agent.sbt.DevelocityPlugin
+import com.gradle.develocity.agent.sbt.DevelocityPlugin.autoImport.DevelocityConfiguration
 import com.gradle.internal.{CustomBuildScanConfig, CustomBuildScanEnhancements, CustomServerConfig, Overrides}
 import sbt.Keys._
 import sbt._
 
 object SbtCommonCustomUserDataPlugin extends AutoPlugin {
 
-  override def requires: Plugins = com.gradle.enterprise.sbt.GradleEnterprisePlugin
+  override def requires: Plugins = com.gradle.develocity.agent.sbt.DevelocityPlugin
 
-  // This plugin is automatically enabled for projects which have GradleEnterprisePlugin.
+  // This plugin is automatically enabled for projects which have DevelocityPlugin.
   override def trigger = allRequirements
 
   override lazy val buildSettings: Seq[Setting[_]] = Seq(
-    GradleEnterprisePlugin.autoImport.gradleEnterpriseConfiguration := applyCCUD(
-      GradleEnterprisePlugin.autoImport.gradleEnterpriseConfiguration.value,
+    DevelocityPlugin.autoImport.develocityConfiguration := applyCCUD(
+      DevelocityPlugin.autoImport.develocityConfiguration.value,
       scalaVersion.value)
   )
 
-  private def applyCCUD(currentConfiguration: GradleEnterpriseConfiguration, scalaVersion: String): GradleEnterpriseConfiguration = {
+  private def applyCCUD(currentConfiguration: DevelocityConfiguration, scalaVersion: String): DevelocityConfiguration = {
     val scan = currentConfiguration.buildScan
     val server = currentConfiguration.server
 
@@ -30,16 +30,15 @@ object SbtCommonCustomUserDataPlugin extends AutoPlugin {
     new Overrides(customServerConfig).apply()
     new CustomBuildScanEnhancements(customBuildScanConfig, customServerConfig).apply()
 
-    currentConfiguration.copy(
-      buildScan = scan.copy(
-        tags = scan.tags ++ customBuildScanConfig.tags,
-        links = scan.links ++ customBuildScanConfig.links,
-        values = scan.values ++ customBuildScanConfig.values
-      ),
-      server = server.copy(
-        url = customServerConfig.url.orElse(server.url),
-        allowUntrusted = customServerConfig.allowUntrusted.getOrElse(server.allowUntrusted)
+
+    currentConfiguration.withServer(server
+        .withUrl(customServerConfig.url.orElse(server.url))
+        .withAllowUntrusted(customServerConfig.allowUntrusted.getOrElse(server.allowUntrusted))
       )
-    )
+      .withBuildScan(scan
+        .withTags(customBuildScanConfig.tags.toSet)
+        .withValues(customBuildScanConfig.values.toMap)
+        .withLinks(customBuildScanConfig.links.toMap)
+      )
   }
 }

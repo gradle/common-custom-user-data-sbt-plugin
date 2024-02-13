@@ -1,6 +1,6 @@
 package com.gradle.internal
 
-import com.gradle.enterprise.sbt.GradleEnterprisePlugin.autoImport.Server
+import com.gradle.develocity.agent.sbt.DevelocityPlugin.autoImport.Server
 import sbt.{URL, url}
 
 import scala.collection.mutable

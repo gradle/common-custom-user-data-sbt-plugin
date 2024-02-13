@@ -1,4 +1,4 @@
 resolvers += Resolver.mavenLocal
-lazy val geVersion = "0.10"
-addSbtPlugin("com.gradle" % "sbt-gradle-enterprise" % geVersion)
+lazy val dvVersion = "1.0"
+addSbtPlugin("com.gradle" % "sbt-develocity" % dvVersion)
 //addSbtPlugin("com.gradle" % "sbt-common-custom-user-data" % "0.1.0-SNAPSHOT")

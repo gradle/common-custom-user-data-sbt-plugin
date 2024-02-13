@@ -15,11 +15,15 @@ TODO: Write a description
 
 ## Compatibility matrix
 
-| GE sbt plugin | sbt CCUD plugin (this) version |
-|---------------|--------------------------------|
-| 0.9           | 0.1.0                          |
-| 0.10          | 0.1.1                          |
+| GE/DV sbt plugin | sbt CCUD plugin (this) version |
+|------------------|--------------------------------|
+| 0.9              | 0.1.0                          |
+| 0.10             | 0.1.1                          |
+| 1.0              | 1.0                            |
 
+## Building
+
+To publish this plugin to maven local you should use `sbt clean publishM2`.
 
 ## Changelog
 

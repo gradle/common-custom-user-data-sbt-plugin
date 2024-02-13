@@ -1,15 +1,16 @@
-import Dependencies._
+import Dependencies.*
 
 ThisBuild / scalaVersion := "2.12.15"
-ThisBuild / version := "0.1.1-SNAPSHOT"
+ThisBuild / version := "1.0-SNAPSHOT"
 ThisBuild / organization := "com.gradle"
 ThisBuild / organizationName := "gradle"
 
 sbtPlugin := true
 publishMavenStyle := true
+resolvers += Resolver.mavenLocal
 
-Global / gradleEnterpriseConfiguration :=
-  GradleEnterpriseConfiguration(
+Global / develocityConfiguration :=
+  DevelocityConfiguration(
     server = Server(
       url = Some(url("https://ge.solutions-team.gradle.com"))
     ),
@@ -19,7 +20,7 @@ Global / gradleEnterpriseConfiguration :=
         ipAddresses = _.map(_ => "0.0.0.0")
       ),
       backgroundUpload = !sys.env.contains("CI"),
-      publishConfig = PublishConfig.Always,
+      publishing = Publishing.onlyIf(_ => true),
     )
   )
 
@@ -36,7 +37,7 @@ lazy val sbtCommonCustomUserDataPlugin = (project in file("."))
         case "2.12" => "1.6.0" // set minimum sbt version - best to keep it in sync with the GE plugin
       }
     },
-    addSbtPlugin(gradleEnterprisePlugin % "provided")
+    addSbtPlugin(develocityPlugin % "provided")
   )
 
 // Uncomment the following for publishing to Sonatype.

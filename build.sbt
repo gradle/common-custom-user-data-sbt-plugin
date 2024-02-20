@@ -12,7 +12,8 @@ resolvers += Resolver.mavenLocal
 Global / develocityConfiguration :=
   DevelocityConfiguration(
     server = Server(
-      url = Some(url("https://ge.solutions-team.gradle.com"))
+//      url = Some(url("https://ge.solutions-team.gradle.com"))
+        url = Some(url("https://ge-helm-cluster-unstable.grdev.net"))
     ),
     buildScan = BuildScan(
       tags = Set(),
@@ -37,7 +38,7 @@ lazy val sbtCommonCustomUserDataPlugin = (project in file("."))
         case "2.12" => "1.6.0" // set minimum sbt version - best to keep it in sync with the GE plugin
       }
     },
-    addSbtPlugin(develocityPlugin % "provided")
+    addSbtPlugin(develocityPlugin)
   )
 
 // Uncomment the following for publishing to Sonatype.

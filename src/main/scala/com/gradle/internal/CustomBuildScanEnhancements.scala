@@ -75,11 +75,12 @@ class CustomBuildScanEnhancements(buildScan: CustomBuildScanConfig, serverConfig
           ifDefined(nodeName)((value: String) => addCustomValueAndSearchLink("CI node", value))
           ifDefined(jobName)((value: String) => addCustomValueAndSearchLink("CI job", value))
           ifDefined(stageName)((value: String) => addCustomValueAndSearchLink("CI stage", value))
-          ifDefined(jobName)((j: String) => ifDefined(buildNumber)((b: String) => {
-              val params: mutable.Map[String, String] = mutable.Map.empty
-              params += "CI job" -> j
-              params += "CI build number" -> b
-              addSearchLink("CI pipeline", params.toMap)
+          ifDefined(jobName)((job: String) => ifDefined(buildNumber)((build: String) => {
+              val params = Map(
+                "CI job" -> job,
+                "CI build number" -> build
+              )
+              addSearchLink("CI pipeline", params)
           }))
       }
 

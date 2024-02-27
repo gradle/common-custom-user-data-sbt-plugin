@@ -48,7 +48,7 @@ class CustomBuildScanEnhancements(buildScan: CustomBuildScanConfig, serverConfig
       }
       else buildScan.tag("Cmd Line")
 
-      ifDefined(sysProperty(SYSTEM_PROP_IDEA_SYNC_ACTIVE), (_: String) => buildScan.tag("IDE sync"))
+      ifDefined(sysProperty(SYSTEM_PROP_IDEA_SYNC_ACTIVE))((_: String) => buildScan.tag("IDE sync"))
     }
   }
 
@@ -71,11 +71,11 @@ class CustomBuildScanEnhancements(buildScan: CustomBuildScanConfig, serverConfig
                   "Hudson build"
               }, buildUrl.get)
           }
-          ifDefined(buildNumber, (value: String) => buildScan.addValue("CI build number", value))
-          ifDefined(nodeName, (value: String) => addCustomValueAndSearchLink("CI node", value))
-          ifDefined(jobName, (value: String) => addCustomValueAndSearchLink("CI job", value))
-          ifDefined(stageName, (value: String) => addCustomValueAndSearchLink("CI stage", value))
-          ifDefined(jobName, (j: String) => ifDefined(buildNumber, (b: String) => {
+          ifDefined(buildNumber)((value: String) => buildScan.addValue("CI build number", value))
+          ifDefined(nodeName)((value: String) => addCustomValueAndSearchLink("CI node", value))
+          ifDefined(jobName)((value: String) => addCustomValueAndSearchLink("CI job", value))
+          ifDefined(stageName)((value: String) => addCustomValueAndSearchLink("CI stage", value))
+          ifDefined(jobName)((j: String) => ifDefined(buildNumber)((b: String) => {
               val params: mutable.Map[String, String] = mutable.Map.empty
               params += "CI job" -> j
               params += "CI build number" -> b
@@ -115,18 +115,18 @@ class CustomBuildScanEnhancements(buildScan: CustomBuildScanConfig, serverConfig
       }
 
       if (isCircleCI) {
-          ifDefined(envVariable("CIRCLE_BUILD_URL"), (url: String) => buildScan.link("CircleCI build", url))
-          ifDefined(envVariable("CIRCLE_BUILD_NUM"), (value: String) => buildScan.addValue("CI build number", value))
-          ifDefined(envVariable("CIRCLE_JOB"), (value: String) => addCustomValueAndSearchLink("CI job", value))
-          ifDefined(envVariable("CIRCLE_WORKFLOW_ID"), (value: String) => addCustomValueAndSearchLink("CI workflow", value))
+          ifDefined(envVariable("CIRCLE_BUILD_URL"))((url: String) => buildScan.link("CircleCI build", url))
+          ifDefined(envVariable("CIRCLE_BUILD_NUM"))((value: String) => buildScan.addValue("CI build number", value))
+          ifDefined(envVariable("CIRCLE_JOB"))((value: String) => addCustomValueAndSearchLink("CI job", value))
+          ifDefined(envVariable("CIRCLE_WORKFLOW_ID"))((value: String) => addCustomValueAndSearchLink("CI workflow", value))
       }
 
       if (isBamboo) {
-          ifDefined(envVariable("bamboo_resultsUrl"), (url: String) => buildScan.link("Bamboo build", url))
-          ifDefined(envVariable("bamboo_buildNumber"), (value: String) => buildScan.addValue("CI build number", value))
-          ifDefined(envVariable("bamboo_planName"), (value: String) => addCustomValueAndSearchLink("CI plan", value))
-          ifDefined(envVariable("bamboo_buildPlanName"), (value: String) => addCustomValueAndSearchLink("CI build plan", value))
-          ifDefined(envVariable("bamboo_agentId"), (value: String) => addCustomValueAndSearchLink("CI agent", value))
+          ifDefined(envVariable("bamboo_resultsUrl"))((url: String) => buildScan.link("Bamboo build", url))
+          ifDefined(envVariable("bamboo_buildNumber"))((value: String) => buildScan.addValue("CI build number", value))
+          ifDefined(envVariable("bamboo_planName"))((value: String) => addCustomValueAndSearchLink("CI plan", value))
+          ifDefined(envVariable("bamboo_buildPlanName"))((value: String) => addCustomValueAndSearchLink("CI build plan", value))
+          ifDefined(envVariable("bamboo_agentId"))((value: String) => addCustomValueAndSearchLink("CI agent", value))
       }
 
       if (isGitHubActions) {
@@ -136,27 +136,27 @@ class CustomBuildScanEnhancements(buildScan: CustomBuildScanConfig, serverConfig
           if (gitHubUrl.isDefined && gitRepository.isDefined && gitHubRunId.isDefined) {
               buildScan.link("GitHub Actions build", gitHubUrl.get + "/" + gitRepository.get + "/actions/runs/" + gitHubRunId.get)
           }
-          ifDefined(envVariable("GITHUB_WORKFLOW"), (value: String) => addCustomValueAndSearchLink("CI workflow", value))
-          ifDefined(envVariable("GITHUB_RUN_ID"), (value: String) => addCustomValueAndSearchLink("CI run", value))
+          ifDefined(envVariable("GITHUB_WORKFLOW"))((value: String) => addCustomValueAndSearchLink("CI workflow", value))
+          ifDefined(envVariable("GITHUB_RUN_ID"))((value: String) => addCustomValueAndSearchLink("CI run", value))
       }
 
       if (isGitLab) {
-          ifDefined(envVariable("CI_JOB_URL"), (url: String) => buildScan.link("GitLab build", url))
-          ifDefined(envVariable("CI_PIPELINE_URL"), (url: String) => buildScan.link("GitLab pipeline", url))
-          ifDefined(envVariable("CI_JOB_NAME"), (value: String) => addCustomValueAndSearchLink("CI job", value))
-          ifDefined(envVariable("CI_JOB_STAGE"), (value: String) => addCustomValueAndSearchLink("CI stage", value))
+          ifDefined(envVariable("CI_JOB_URL"))((url: String) => buildScan.link("GitLab build", url))
+          ifDefined(envVariable("CI_PIPELINE_URL"))((url: String) => buildScan.link("GitLab pipeline", url))
+          ifDefined(envVariable("CI_JOB_NAME"))((value: String) => addCustomValueAndSearchLink("CI job", value))
+          ifDefined(envVariable("CI_JOB_STAGE"))((value: String) => addCustomValueAndSearchLink("CI stage", value))
       }
 
       if (isTravis) {
-          ifDefined(envVariable("TRAVIS_BUILD_WEB_URL"), (url: String) => buildScan.link("Travis build", url))
-          ifDefined(envVariable("TRAVIS_BUILD_NUMBER"), (value: String) => buildScan.addValue("CI build number", value))
-          ifDefined(envVariable("TRAVIS_JOB_NAME"), (value: String) => addCustomValueAndSearchLink("CI job", value))
-          ifDefined(envVariable("TRAVIS_EVENT_TYPE"), buildScan.tag)
+          ifDefined(envVariable("TRAVIS_BUILD_WEB_URL"))((url: String) => buildScan.link("Travis build", url))
+          ifDefined(envVariable("TRAVIS_BUILD_NUMBER"))((value: String) => buildScan.addValue("CI build number", value))
+          ifDefined(envVariable("TRAVIS_JOB_NAME"))((value: String) => addCustomValueAndSearchLink("CI job", value))
+          ifDefined(envVariable("TRAVIS_EVENT_TYPE"))(buildScan.tag)
       }
 
       if (isBitrise) {
-          ifDefined(envVariable("BITRISE_BUILD_URL"), (url: String) => buildScan.link("Bitrise build", url))
-          ifDefined(envVariable("BITRISE_BUILD_NUMBER"), (value: String) => buildScan.addValue("CI build number", value))
+          ifDefined(envVariable("BITRISE_BUILD_URL"))((url: String) => buildScan.link("Bitrise build", url))
+          ifDefined(envVariable("BITRISE_BUILD_NUMBER"))((value: String) => buildScan.addValue("CI build number", value))
       }
 
       if (isGoCD) {
@@ -176,9 +176,9 @@ class CustomBuildScanEnhancements(buildScan: CustomBuildScanConfig, serverConfig
                   buildScan.link("GoCD", goServerUrl.get)
               }
           }
-          ifDefined(pipelineName, (value: String) => addCustomValueAndSearchLink("CI pipeline", value))
-          ifDefined(jobName, (value: String) => addCustomValueAndSearchLink("CI job", value))
-          ifDefined(stageName, (value: String) => addCustomValueAndSearchLink("CI stage", value))
+          ifDefined(pipelineName)((value: String) => addCustomValueAndSearchLink("CI pipeline", value))
+          ifDefined(jobName)((value: String) => addCustomValueAndSearchLink("CI job", value))
+          ifDefined(stageName)((value: String) => addCustomValueAndSearchLink("CI stage", value))
       }
 
       if (isAzurePipelines) {
@@ -195,19 +195,19 @@ class CustomBuildScanEnhancements(buildScan: CustomBuildScanConfig, serverConfig
                   buildScan.link("Azure Pipelines", azureServerUrl.get)
               }
           }
-          ifDefined(buildId, (value: String) => buildScan.addValue("CI build number", value))
+          ifDefined(buildId)((value: String) => buildScan.addValue("CI build number", value))
       }
 
       if (isBuildkite) {
-          ifDefined(envVariable("BUILDKITE_BUILD_URL"), (url: String) => buildScan.link("Buildkite build", url))
-          ifDefined(envVariable("BUILDKITE_COMMAND"), (command: String) => addCustomValueAndSearchLink("CI command", command))
-          ifDefined(envVariable("BUILDKITE_BUILD_ID"), (id: String) => buildScan.addValue("CI build ID", id))
+          ifDefined(envVariable("BUILDKITE_BUILD_URL"))((url: String) => buildScan.link("Buildkite build", url))
+          ifDefined(envVariable("BUILDKITE_COMMAND"))((command: String) => addCustomValueAndSearchLink("CI command", command))
+          ifDefined(envVariable("BUILDKITE_BUILD_ID"))((id: String) => buildScan.addValue("CI build ID", id))
           val buildkitePrRepo: Option[String] = envVariable("BUILDKITE_PULL_REQUEST_REPO")
           val buildkitePrNumber: Option[String] = envVariable("BUILDKITE_PULL_REQUEST")
           if (buildkitePrRepo.isDefined && buildkitePrNumber.isDefined) {
               // Create a GitHub link with the pr number and full repo url
               val prNumber: String = buildkitePrNumber.get
-              ifDefined(toWebRepoUri(buildkitePrRepo.get), (url: URI) => buildScan.link("PR source", url + "/pull/" + prNumber))
+              ifDefined(toWebRepoUri(buildkitePrRepo.get))((url: URI) => buildScan.link("PR source", url + "/pull/" + prNumber))
           }
       }
   }
@@ -332,10 +332,8 @@ class CustomBuildScanEnhancements(buildScan: CustomBuildScanConfig, serverConfig
 
   private def getServer(): Option[URL] = serverConfig.url
 
-    private def ifDefined[A](optional: Option[A], function: A => Unit): Unit = {
-        if (optional.isDefined) {
-            function(optional.get)
-        }
-    }
+  private def ifDefined[A](optional: Option[A])(function: A => Unit): Unit = {
+    optional.foreach(function)
+  }
 
 }

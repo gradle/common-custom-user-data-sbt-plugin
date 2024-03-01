@@ -6,21 +6,25 @@ import sbt.{URL, url}
 import scala.collection.mutable
 
 class CustomBuildScanConfig {
-  val tags: mutable.Set[String] = mutable.Set.empty
-  val links: mutable.Map[String, URL] = mutable.Map.empty
-  val values: mutable.Map[String, String] = mutable.Map.empty
+  private val _tags: mutable.Set[String] = mutable.Set.empty
+  private val _links: mutable.Map[String, URL] = mutable.Map.empty
+  private val _values: mutable.Map[String, String] = mutable.Map.empty
+
+  def tags(): Set[String] = _tags.toSet
+  def links(): Map[String, URL] = _links.toMap
+  def values(): Map[String, String] = _values.toMap
 
   def tag(s: String): Unit = {
-    tags += s
+    _tags += s
   }
 
   def tags(newTags: Set[String]): Unit = {
-    tags ++= newTags
+    _tags ++= newTags
   }
 
   def link(key: String, link: String): Unit = {
       try {
-          links += key -> url(link)
+          _links += key -> url(link)
       } catch {
           case _: java.lang.IllegalArgumentException => {} // Ignore
       }
@@ -31,35 +35,35 @@ class CustomBuildScanConfig {
   }
 
   def addValue(key: String, value: String): Unit = {
-    values += key -> value
+    _values += key -> value
   }
 
   def values(newValues: Map[String, String]): Unit = {
-    values ++= newValues
+    _values ++= newValues
   }
 }
 
-class CustomServerConfig {
-  private var _url: Option[URL] = None
+class CustomServerConfig (
+  private var _url: Option[URL] = None,
   private var _allowUntrusted: Option[Boolean] = None
+) {
 
-  def url: Option[URL] = _url
+  def url(): Option[URL] = _url
 
-  def allowUntrusted: Option[Boolean] = _allowUntrusted
+  def allowUntrusted(): Option[Boolean] = _allowUntrusted
 
-  def url_=(newValue: String): Unit = {
+  def url(newValue: String): Unit = {
     if (newValue != null) _url = Some(new URL(newValue))
   }
 
-  def allowUntrusted_=(newValue: Boolean): Unit = {
+  def allowUntrusted(newValue: Boolean): Unit = {
     _allowUntrusted = Some(newValue)
   }
+}
 
-  def fromServer(server: Server): CustomServerConfig = {
-    _url = server.url
-    _allowUntrusted = Some(server.allowUntrusted)
-     return this
-  }
+object CustomServerConfig {
+  def fromServer(server: Server): CustomServerConfig =
+    new CustomServerConfig(server.url, Some(server.allowUntrusted))
 }
 
 

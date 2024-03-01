@@ -158,21 +158,26 @@ class CustomBuildScanEnhancements(buildScan: CustomBuildScanConfig, serverConfig
 
       if (isGoCD) {
           val pipelineName: Option[String] = envVariable("GO_PIPELINE_NAME")
-          val pipelineNumber: Option[String] = envVariable("GO_PIPELINE_COUNTER")
           val stageName: Option[String] = envVariable("GO_STAGE_NAME")
-          val stageNumber: Option[String] = envVariable("GO_STAGE_COUNTER")
           val jobName: Option[String] = envVariable("GO_JOB_NAME")
           val goServerUrl: Option[String] = envVariable("GO_SERVER_URL")
-          if (List(pipelineName, pipelineNumber, stageName, stageNumber, jobName, goServerUrl).forall( item => item.isDefined )) {
-              //noinspection OptionGetWithoutIsPresent
-              val buildUrl: String = String.format("%s/tab/build/detail/%s/%s/%s/%s/%s", goServerUrl.get, pipelineName.get, pipelineNumber.get, stageName.get, stageNumber.get, jobName.get)
-              buildScan.link("GoCD build", buildUrl)
+
+          val goCdBuild = for {
+            pipelineName <- pipelineName
+            pipelineNumber <- envVariable("GO_PIPELINE_COUNTER")
+            stageName <- stageName
+            stageNumber <- envVariable("GO_STAGE_COUNTER")
+            jobName <- jobName
+            goServerUrl <- goServerUrl
+          } yield {
+            s"$goServerUrl/tab/build/detail/$pipelineName/$pipelineNumber/$stageName/$stageNumber/$jobName"
           }
-          else {
-              if (goServerUrl.isDefined) {
-                  buildScan.link("GoCD", goServerUrl.get)
-              }
+
+          goCdBuild match {
+            case Some(buildUrl) => buildScan.link("GoCD build", buildUrl)
+            case None           => envVariable("GO_SERVER_URL").foreach(url => buildScan.link("GoCD", url))
           }
+
           ifDefined(pipelineName)((value: String) => addCustomValueAndSearchLink("CI pipeline", value))
           ifDefined(jobName)((value: String) => addCustomValueAndSearchLink("CI job", value))
           ifDefined(stageName)((value: String) => addCustomValueAndSearchLink("CI stage", value))
@@ -180,17 +185,19 @@ class CustomBuildScanEnhancements(buildScan: CustomBuildScanConfig, serverConfig
 
       if (isAzurePipelines) {
           val azureServerUrl: Option[String] = envVariable("SYSTEM_TEAMFOUNDATIONCOLLECTIONURI")
-          val azureProject: Option[String] = envVariable("SYSTEM_TEAMPROJECT")
           val buildId: Option[String] = envVariable("BUILD_BUILDID")
-          if (List(azureServerUrl, azureProject, buildId).forall( item => item.isDefined )) {
-              //noinspection OptionGetWithoutIsPresent
-              val buildUrl: String = String.format("%s%s/_build/results?buildId=%s", azureServerUrl.get, azureProject.get, buildId.get)
-              buildScan.link("Azure Pipelines build", buildUrl)
+
+          val buildUrl = for {
+            azureServerUrl <- azureServerUrl
+            azureProject <- envVariable("SYSTEM_TEAMPROJECT")
+            buildId <- buildId
+          } yield {
+            s"$azureServerUrl$azureProject/_build/results?buildId=$buildId"
           }
-          else {
-              if (azureServerUrl.isDefined) {
-                  buildScan.link("Azure Pipelines", azureServerUrl.get)
-              }
+
+          buildUrl match {
+            case Some(buildUrl) => buildScan.link("Azure Pipelines build", buildUrl)
+            case None           => ifDefined(azureServerUrl)((value: String) => buildScan.link("Azure Pipelines", value))
           }
           ifDefined(buildId)((value: String) => buildScan.addValue("CI build number", value))
       }
@@ -199,12 +206,13 @@ class CustomBuildScanEnhancements(buildScan: CustomBuildScanConfig, serverConfig
           ifDefined(envVariable("BUILDKITE_BUILD_URL"))((url: String) => buildScan.link("Buildkite build", url))
           ifDefined(envVariable("BUILDKITE_COMMAND"))((command: String) => addCustomValueAndSearchLink("CI command", command))
           ifDefined(envVariable("BUILDKITE_BUILD_ID"))((id: String) => buildScan.addValue("CI build ID", id))
-          val buildkitePrRepo: Option[String] = envVariable("BUILDKITE_PULL_REQUEST_REPO")
-          val buildkitePrNumber: Option[String] = envVariable("BUILDKITE_PULL_REQUEST")
-          if (buildkitePrRepo.isDefined && buildkitePrNumber.isDefined) {
-              // Create a GitHub link with the pr number and full repo url
-              val prNumber: String = buildkitePrNumber.get
-              ifDefined(toWebRepoUri(buildkitePrRepo.get))((url: URI) => buildScan.link("PR source", url + "/pull/" + prNumber))
+
+          for {
+            buildkitePrRepo <- envVariable("BUILDKITE_PULL_REQUEST_REPO").flatMap(toWebRepoUri)
+            buildkitePrNumber <- envVariable("BUILDKITE_PULL_REQUEST")
+          } yield {
+            // Create a GitHub link with the pr number and full repo url
+            buildScan.link("PR source", s"$buildkitePrRepo/pull/$buildkitePrNumber")
           }
       }
   }
@@ -317,12 +325,11 @@ class CustomBuildScanEnhancements(buildScan: CustomBuildScanConfig, serverConfig
   }
 
   private def addSearchLink(linkLabel: String, name: String, value: String): Unit = {
-    val server = getServer()
-    if (server.isDefined) {
+    getServer().foreach { server =>
       val params = urlEncode(name).map(n => "&search.names=" + n).getOrElse("") + urlEncode(value).map(v => "&search.values=" + v).getOrElse("")
       val searchParams = params.replaceFirst("&", "")
       val buildScanSelection = urlEncode("{SCAN_ID}").map(s => "#selection.buildScanB=" + s).getOrElse("")
-      val url = appendIfMissing(server.get.toString, '/') + "scans?" + searchParams + buildScanSelection
+      val url = appendIfMissing(server.toString, '/') + "scans?" + searchParams + buildScanSelection
       buildScan.link(linkLabel + " build scans", url)
     }
   }

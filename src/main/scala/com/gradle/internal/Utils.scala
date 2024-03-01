@@ -20,13 +20,11 @@ object Utils {
   private def toEnvVarName(sysPropertyName: String) = sysPropertyName.toUpperCase.replace('.', '_')
 
   private[gradle] def sysPropertyOrEnvVariable(sysPropertyName: String, envVarName: String): Option[String] = {
-    val prop = sysProperty(sysPropertyName)
-    if (prop.isDefined) prop else envVariable(envVarName)
+    sysProperty(sysPropertyName).orElse(envVariable(envVarName))
   }
 
   private[gradle] def booleanSysPropertyOrEnvVariable(sysPropertyName: String, envVarName: String): Option[Boolean] = {
-    val prop = booleanSysProperty(sysPropertyName)
-    if (prop.isDefined) prop else booleanEnvVariable(envVarName)
+    booleanSysProperty(sysPropertyName).orElse(booleanEnvVariable(envVarName))
   }
 
   private[gradle] def envVariable(name: String): Option[String] = sys.env.get(name)

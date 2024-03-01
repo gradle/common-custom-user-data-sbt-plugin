@@ -5,7 +5,7 @@ import sbt.{URL, url}
 
 import scala.collection.mutable
 
-class CustomBuildScanConfig {
+class BuildScanConfigTemp {
   private val _tags: mutable.Set[String] = mutable.Set.empty
   private val _links: mutable.Map[String, URL] = mutable.Map.empty
   private val _values: mutable.Map[String, String] = mutable.Map.empty
@@ -43,7 +43,7 @@ class CustomBuildScanConfig {
   }
 }
 
-class CustomServerConfig (
+class ServerConfigTemp(
   private var _url: Option[URL] = None,
   private var _allowUntrusted: Option[Boolean] = None
 ) {
@@ -61,9 +61,9 @@ class CustomServerConfig (
   }
 }
 
-object CustomServerConfig {
-  def fromServer(server: Server): CustomServerConfig =
-    new CustomServerConfig(server.url, Some(server.allowUntrusted))
+object ServerConfigTemp {
+  def fromServer(server: Server): ServerConfigTemp =
+    new ServerConfigTemp(server.url, Some(server.allowUntrusted))
 }
 
 

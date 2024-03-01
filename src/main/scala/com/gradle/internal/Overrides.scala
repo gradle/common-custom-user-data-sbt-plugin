@@ -8,7 +8,7 @@ object Overrides {
   private val GRADLE_ENTERPRISE_URL = "gradle.enterprise.url"
   private val GRADLE_ENTERPRISE_ALLOW_UNTRUSTED_SERVER = "gradle.enterprise.allowUntrustedServer"
 
-  def apply(serverConfig: CustomServerConfig): Unit = {
+  def applyTo(serverConfig: ServerConfigTemp): Unit = {
     sysPropertyOrEnvVariable(GRADLE_ENTERPRISE_URL).foreach(serverConfig.url)
     booleanSysPropertyOrEnvVariable(GRADLE_ENTERPRISE_ALLOW_UNTRUSTED_SERVER).foreach(serverConfig.allowUntrusted)
   }

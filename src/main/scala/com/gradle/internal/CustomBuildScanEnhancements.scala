@@ -10,7 +10,7 @@ import scala.collection.mutable
 /**
  * Adds a standard set of useful tags, links and custom values to all build scans published.
  */
-class CustomBuildScanEnhancements(buildScan: CustomBuildScanConfig, serverConfig: CustomServerConfig) {
+class CustomBuildScanEnhancements(buildScan: BuildScanConfigTemp, serverConfig: ServerConfigTemp) {
 
   private val SYSTEM_PROP_IDEA_VENDOR_NAME = "idea.vendor.name"
   private val SYSTEM_PROP_IDEA_VERSION = "idea.version"

@@ -11,7 +11,7 @@ import scala.sys.process._
 
 object Utils {
 
-  private val GIT_REPO_URI_PATTERN = Pattern.compile("^(?:(?:https://|git://)|(?:ssh)?.*?@)(.*?(?:github|gitlab).*?)(?:/|:[0-9]*?/|:)(.*?)(?:\\.git)?$")
+  private val GIT_REPO_URI_REGEX = "^(?:(?:https://|git://)|(?:ssh)?.*?@)(.*?(?:github|gitlab).*?)(?:/|:[0-9]*?/|:)(.*?)(?:\\.git)?$".r
 
   private[gradle] def sysPropertyOrEnvVariable(sysPropertyName: String): Option[String] = sysPropertyOrEnvVariable(sysPropertyName, toEnvVarName(sysPropertyName))
 
@@ -65,15 +65,13 @@ object Utils {
    * The scheme can be any of <code>git://</code>, <code>https://</code>, or <code>ssh</code>.
    */
   private[gradle] def toWebRepoUri(gitRepoUri: String): Option[URI] = {
-    val matcher = GIT_REPO_URI_PATTERN.matcher(gitRepoUri)
-    if (matcher.matches) {
-      val scheme = "https"
-      val host = matcher.group(1)
-      val path = if (matcher.group(2).startsWith("/")) matcher.group(2)
-      else "/" + matcher.group(2)
-      toUri(scheme, host, path)
+    gitRepoUri match {
+      case GIT_REPO_URI_REGEX(host, rawPath) =>
+        val path = if (rawPath.startsWith("/")) rawPath else "/" + rawPath
+        toUri("https", host, path)
+      case _ =>
+        None
     }
-    else None
   }
 
   private def toUri(scheme: String, host: String, path: String): Option[URI] = {

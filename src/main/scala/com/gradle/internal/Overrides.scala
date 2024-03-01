@@ -4,7 +4,7 @@ import com.gradle.internal.Utils.{booleanSysPropertyOrEnvVariable, sysPropertyOr
 
 object Overrides {
 
-  // system properties to override Gradle Enterprise configuration
+  // System properties to override Develocity configuration
   private val GRADLE_ENTERPRISE_URL = "gradle.enterprise.url"
   private val GRADLE_ENTERPRISE_ALLOW_UNTRUSTED_SERVER = "gradle.enterprise.allowUntrustedServer"
 

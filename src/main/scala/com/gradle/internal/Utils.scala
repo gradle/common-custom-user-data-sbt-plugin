@@ -142,4 +142,7 @@ object Utils {
               throw new RuntimeException(e)
       } finally if (input != null) input.close()
   }
+
+  private[gradle] def getProperty(properties: Properties, propertyName: String): Option[String] =
+    Option(properties.getProperty(propertyName)).filter(_.nonEmpty)
 }

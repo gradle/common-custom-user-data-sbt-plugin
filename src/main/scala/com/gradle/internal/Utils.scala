@@ -31,17 +31,21 @@ object Utils {
 
   private[gradle] def envVariable(name: String): Option[String] = sys.env.get(name)
 
-  private[gradle] def booleanEnvVariable(name: String): Option[Boolean] = envVariable(name).map(_.toBoolean)
+  private[gradle] def booleanEnvVariable(name: String): Option[Boolean] = envVariable(name).map(parseBoolean)
 
   private[gradle] def sysProperty(name: String): Option[String] = sys.props.get(name)
 
-  private[gradle] def booleanSysProperty(name: String): Option[Boolean] = sysProperty(name).map(_.toBoolean)
+  private[gradle] def booleanSysProperty(name: String): Option[Boolean] = sysProperty(name).map(parseBoolean)
 
   private[gradle] def isNotEmpty(value: Option[String]): Boolean = value.exists(_.nonEmpty)
 
   private[gradle] def appendIfMissing(string: String, suffix: Char): String = {
     if (string.nonEmpty && string.charAt(string.length - 1) == suffix) string
     else string + suffix
+  }
+
+  private def parseBoolean(string: String): Boolean = try string.toBoolean catch {
+    case scala.util.control.NonFatal(_) => false
   }
 
   private def trimAtEnd(str: String) = ('x' + str).trim.substring(1)
@@ -131,15 +135,15 @@ object Utils {
     }
   }
 
-    private[gradle] def readPropertiesFile(name: String) = {
-        val input = new FileInputStream(name)
-        try {
-            val properties = new Properties
-            properties.load(input)
-            properties
-        } catch {
-            case e: IOException =>
-                throw new RuntimeException(e)
-        } finally if (input != null) input.close()
-    }
+  private[gradle] def readPropertiesFile(name: String) = {
+      val input = new FileInputStream(name)
+      try {
+          val properties = new Properties
+          properties.load(input)
+          properties
+      } catch {
+          case e: IOException =>
+              throw new RuntimeException(e)
+      } finally if (input != null) input.close()
+  }
 }

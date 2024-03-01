@@ -2,7 +2,7 @@ package com.gradle
 
 import com.gradle.develocity.agent.sbt.DevelocityPlugin
 import com.gradle.develocity.agent.sbt.DevelocityPlugin.autoImport.DevelocityConfiguration
-import com.gradle.internal.{BuildScanConfigTemp, CustomBuildScanEnhancements, ServerConfigTemp, Overrides}
+import com.gradle.internal.{CustomBuildScanEnhancements, ServerConfigTemp, Overrides}
 import sbt.Keys._
 import sbt._
 
@@ -24,21 +24,14 @@ object SbtCommonCustomUserDataPlugin extends AutoPlugin {
     val server = currentConfiguration.server
 
     val serverConfigTemp = ServerConfigTemp.fromServer(server)
-    val buildScanConfigTemp = new BuildScanConfigTemp()
-    buildScanConfigTemp.addValue("Scala versions", scalaVersions.mkString(","))
-
     Overrides.applyTo(serverConfigTemp)
-    new CustomBuildScanEnhancements(buildScanConfigTemp, serverConfigTemp).apply()
 
+    val newBuildScan = new CustomBuildScanEnhancements(serverConfigTemp, scalaVersions.mkString(",")).withAdditionalData(scan)
 
     currentConfiguration.withServer(server
-        .withUrl(serverConfigTemp.url().orElse(server.url))
+        .withUrl(serverConfigTemp.url())
         .withAllowUntrusted(serverConfigTemp.allowUntrusted().getOrElse(server.allowUntrusted))
       )
-      .withBuildScan(scan
-        .withTags(buildScanConfigTemp.tags())
-        .withValues(buildScanConfigTemp.values())
-        .withLinks(buildScanConfigTemp.links())
-      )
+      .withBuildScan(newBuildScan)
   }
 }

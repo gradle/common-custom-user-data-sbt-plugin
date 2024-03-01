@@ -1,10 +1,9 @@
 package com.gradle.internal
 
-import java.io.{FileInputStream, IOException, InputStream, UnsupportedEncodingException}
+import java.io.{FileInputStream, IOException, UnsupportedEncodingException}
 import java.net.{URI, URISyntaxException, URLEncoder}
 import java.nio.charset.StandardCharsets
 import java.util.Properties
-import java.util.regex.Pattern
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent._
 import scala.sys.process._

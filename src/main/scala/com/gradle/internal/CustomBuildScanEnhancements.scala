@@ -1,16 +1,16 @@
 package com.gradle.internal
 
-import com.gradle.internal.CiUtils._
-import com.gradle.internal.Utils._
+import com.gradle.develocity.agent.sbt.api.configuration.BuildScan
+import com.gradle.internal.CiUtils.*
+import com.gradle.internal.Utils.*
 import sbt.URL
-
-import java.net.URI
-import scala.collection.mutable
 
 /**
  * Adds a standard set of useful tags, links and custom values to all build scans published.
  */
-class CustomBuildScanEnhancements(buildScan: BuildScanConfigTemp, serverConfig: ServerConfigTemp) {
+class CustomBuildScanEnhancements(serverConfig: ServerConfigTemp, scalaVersions: String) {
+
+  private val buildScan = new BuildScanTemp()
 
   private val SYSTEM_PROP_IDEA_VENDOR_NAME = "idea.vendor.name"
   private val SYSTEM_PROP_IDEA_VERSION = "idea.version"
@@ -18,12 +18,19 @@ class CustomBuildScanEnhancements(buildScan: BuildScanConfigTemp, serverConfig: 
   private val SYSTEM_PROP_ECLIPSE_BUILD_ID = "eclipse.buildId"
   private val SYSTEM_PROP_IDEA_SYNC_ACTIVE = "idea.sync.active"
 
-  def apply(): Unit = {
+  def withAdditionalData(originBuildScan: BuildScan): BuildScan = {
     captureOs()
     captureIde()
     captureCiOrLocal()
     captureCiMetadata()
     captureGitMetadata()
+
+    buildScan.addValue("Scala versions", scalaVersions.mkString(","))
+
+    originBuildScan
+      .withTags(buildScan.tags())
+      .withValues(buildScan.values())
+      .withLinks(buildScan.links())
   }
 
   private def captureOs(): Unit = {

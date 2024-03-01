@@ -5,7 +5,7 @@ import sbt.{URL, url}
 
 import scala.collection.mutable
 
-class BuildScanConfigTemp {
+class BuildScanTemp {
   private val _tags: mutable.Set[String] = mutable.Set.empty
   private val _links: mutable.Map[String, URL] = mutable.Map.empty
   private val _values: mutable.Map[String, String] = mutable.Map.empty

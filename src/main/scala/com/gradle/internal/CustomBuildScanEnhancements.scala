@@ -64,12 +64,8 @@ class CustomBuildScanEnhancements(buildScan: CustomBuildScanConfig, serverConfig
           val jobName: Option[String] = envVariable("JOB_NAME")
           val stageName: Option[String] = envVariable("STAGE_NAME")
           if (buildUrl.isDefined) {
-              buildScan.link(if (isJenkins) {
-                  "Jenkins build"
-              }
-              else {
-                  "Hudson build"
-              }, buildUrl.get)
+              val label = if (isJenkins) "Jenkins build" else "Hudson build"
+              buildScan.link(label, buildUrl.get)
           }
           ifDefined(buildNumber)((value: String) => buildScan.addValue("CI build number", value))
           ifDefined(nodeName)((value: String) => addCustomValueAndSearchLink("CI node", value))
@@ -88,27 +84,27 @@ class CustomBuildScanEnhancements(buildScan: CustomBuildScanConfig, serverConfig
           val teamcityBuildPropertiesFile = envVariable("TEAMCITY_BUILD_PROPERTIES_FILE")
           if (teamcityBuildPropertiesFile.isDefined) {
               val buildProperties = readPropertiesFile(teamcityBuildPropertiesFile.get)
-              val teamCityBuildId = Option.apply(buildProperties.getProperty("teamcity.build.id"))
+              val teamCityBuildId = Option(buildProperties.getProperty("teamcity.build.id"))
               if (isNotEmpty(teamCityBuildId)) {
-                  val teamcityConfigFile = Option.apply(buildProperties.getProperty("teamcity.configuration.properties.file"))
+                  val teamcityConfigFile = Option(buildProperties.getProperty("teamcity.configuration.properties.file"))
                   if (isNotEmpty(teamcityConfigFile)) {
                       val configProperties = readPropertiesFile(teamcityConfigFile.get)
-                      val teamCityServerUrl = Option.apply(configProperties.getProperty("teamcity.serverUrl"))
+                      val teamCityServerUrl = Option(configProperties.getProperty("teamcity.serverUrl"))
                       if (isNotEmpty(teamCityServerUrl)) {
                           val buildUrl: String = appendIfMissing(teamCityServerUrl.get, '/') + "viewLog.html?buildId=" + urlEncode(teamCityBuildId.get).get
                           buildScan.link("TeamCity build", buildUrl)
                       }
                   }
               }
-              val teamCityBuildNumber = Option.apply(buildProperties.getProperty("build.number"))
+              val teamCityBuildNumber = Option(buildProperties.getProperty("build.number"))
               if (isNotEmpty(teamCityBuildNumber)) {
                   buildScan.addValue("CI build number", teamCityBuildNumber.get)
               }
-              val teamCityBuildTypeId = Option.apply(buildProperties.getProperty("teamcity.buildType.id"))
+              val teamCityBuildTypeId = Option(buildProperties.getProperty("teamcity.buildType.id"))
               if (isNotEmpty(teamCityBuildTypeId)) {
                   addCustomValueAndSearchLink("CI build config", teamCityBuildTypeId.get)
               }
-              val teamCityAgentName = Option.apply(buildProperties.getProperty("agent.name"))
+              val teamCityAgentName = Option(buildProperties.getProperty("agent.name"))
               if (isNotEmpty(teamCityAgentName)) {
                   addCustomValueAndSearchLink("CI agent", teamCityAgentName.get)
               }

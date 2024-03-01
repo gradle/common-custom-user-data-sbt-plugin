@@ -37,9 +37,7 @@ object Utils {
 
   private[gradle] def booleanSysProperty(name: String): Option[Boolean] = sysProperty(name).map(_.toBoolean)
 
-  private[gradle] def isNotEmpty(value: Option[String]): Boolean = {
-    value.isDefined && value.get.nonEmpty
-  }
+  private[gradle] def isNotEmpty(value: Option[String]): Boolean = value.exists(_.nonEmpty)
 
   private[gradle] def appendIfMissing(string: String, suffix: Char): String = {
     if (string.nonEmpty && string.charAt(string.length - 1) == suffix) string

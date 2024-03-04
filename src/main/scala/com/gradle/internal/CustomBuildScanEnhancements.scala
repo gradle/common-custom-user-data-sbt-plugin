@@ -1,6 +1,7 @@
 package com.gradle.internal
 
 import com.gradle.develocity.agent.sbt.api.configuration.BuildScan
+import com.gradle.develocity.agent.sbt.api.configuration.Server
 import com.gradle.internal.CiUtils.*
 import com.gradle.internal.Utils.*
 import sbt.URL
@@ -8,7 +9,7 @@ import sbt.URL
 /**
  * Adds a standard set of useful tags, links and custom values to all build scans published.
  */
-class CustomBuildScanEnhancements(serverConfig: ServerConfigTemp, scalaVersions: String) {
+class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: String) {
 
   private val buildScan = new BuildScanTemp()
 

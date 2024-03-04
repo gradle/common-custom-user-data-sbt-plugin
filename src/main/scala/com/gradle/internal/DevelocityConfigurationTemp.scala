@@ -42,26 +42,3 @@ class BuildScanTemp {
     _values ++= newValues
   }
 }
-
-class ServerConfigTemp(
-    private var _url: Option[URL] = None,
-    private var _allowUntrusted: Option[Boolean] = None
-) {
-
-  def url(): Option[URL] = _url
-
-  def allowUntrusted(): Option[Boolean] = _allowUntrusted
-
-  def url(newValue: String): Unit = {
-    if (newValue != null) _url = Some(new URL(newValue))
-  }
-
-  def allowUntrusted(newValue: Boolean): Unit = {
-    _allowUntrusted = Some(newValue)
-  }
-}
-
-object ServerConfigTemp {
-  def fromServer(server: Server): ServerConfigTemp =
-    new ServerConfigTemp(server.url, Some(server.allowUntrusted))
-}

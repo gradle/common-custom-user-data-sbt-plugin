@@ -1,3 +1,5 @@
+addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.5.2")
+
 resolvers += Resolver.mavenLocal
 //lazy val dvVersion = "0.11-for-local-testing"
 lazy val dvVersion = "1.0"

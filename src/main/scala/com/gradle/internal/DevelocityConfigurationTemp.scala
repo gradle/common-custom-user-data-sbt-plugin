@@ -23,15 +23,15 @@ class BuildScanTemp {
   }
 
   def link(key: String, link: String): Unit = {
-      try {
-          _links += key -> url(link)
-      } catch {
-          case _: java.lang.IllegalArgumentException => {} // Ignore
-      }
+    try {
+      _links += key -> url(link)
+    } catch {
+      case _: java.lang.IllegalArgumentException => {} // Ignore
+    }
   }
 
   def links(newLinks: Map[String, String]): Unit = {
-      newLinks.foreach( pair => link(pair._1, pair._2) )
+    newLinks.foreach(pair => link(pair._1, pair._2))
   }
 
   def addValue(key: String, value: String): Unit = {
@@ -44,8 +44,8 @@ class BuildScanTemp {
 }
 
 class ServerConfigTemp(
-  private var _url: Option[URL] = None,
-  private var _allowUntrusted: Option[Boolean] = None
+    private var _url: Option[URL] = None,
+    private var _allowUntrusted: Option[Boolean] = None
 ) {
 
   def url(): Option[URL] = _url
@@ -65,8 +65,3 @@ object ServerConfigTemp {
   def fromServer(server: Server): ServerConfigTemp =
     new ServerConfigTemp(server.url, Some(server.allowUntrusted))
 }
-
-
-
-
-

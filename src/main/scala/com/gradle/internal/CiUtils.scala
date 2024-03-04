@@ -4,7 +4,8 @@ import com.gradle.internal.Utils.{envVariable, sysProperty}
 
 object CiUtils {
 
-  private[gradle] lazy val isCi = isGenericCI || isJenkins || isHudson || isTeamCity || isCircleCI || isBamboo || isGitHubActions || isGitLab || isTravis || isBitrise || isGoCD || isAzurePipelines || isBuildkite
+  private[gradle] lazy val isCi =
+    isGenericCI || isJenkins || isHudson || isTeamCity || isCircleCI || isBamboo || isGitHubActions || isGitLab || isTravis || isBitrise || isGoCD || isAzurePipelines || isBuildkite
 
   private[gradle] lazy val isGenericCI = envVariable("CI").isDefined || sysProperty("CI").isDefined
 

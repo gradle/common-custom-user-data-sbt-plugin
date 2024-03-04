@@ -10,11 +10,14 @@ import scala.sys.process._
 
 object Utils {
 
-  private val GIT_REPO_URI_REGEX = "^(?:(?:https://|git://)|(?:ssh)?.*?@)(.*?(?:github|gitlab).*?)(?:/|:[0-9]*?/|:)(.*?)(?:\\.git)?$".r
+  private val GIT_REPO_URI_REGEX =
+    "^(?:(?:https://|git://)|(?:ssh)?.*?@)(.*?(?:github|gitlab).*?)(?:/|:[0-9]*?/|:)(.*?)(?:\\.git)?$".r
 
-  private[gradle] def sysPropertyOrEnvVariable(sysPropertyName: String): Option[String] = sysPropertyOrEnvVariable(sysPropertyName, toEnvVarName(sysPropertyName))
+  private[gradle] def sysPropertyOrEnvVariable(sysPropertyName: String): Option[String] =
+    sysPropertyOrEnvVariable(sysPropertyName, toEnvVarName(sysPropertyName))
 
-  private[gradle] def booleanSysPropertyOrEnvVariable(sysPropertyName: String): Option[Boolean] = booleanSysPropertyOrEnvVariable(sysPropertyName, toEnvVarName(sysPropertyName))
+  private[gradle] def booleanSysPropertyOrEnvVariable(sysPropertyName: String): Option[Boolean] =
+    booleanSysPropertyOrEnvVariable(sysPropertyName, toEnvVarName(sysPropertyName))
 
   private def toEnvVarName(sysPropertyName: String) = sysPropertyName.toUpperCase.replace('.', '_')
 
@@ -41,7 +44,8 @@ object Utils {
     else string + suffix
   }
 
-  private def parseBoolean(string: String): Boolean = try string.toBoolean catch {
+  private def parseBoolean(string: String): Boolean = try string.toBoolean
+  catch {
     case scala.util.control.NonFatal(_) => false
   }
 
@@ -126,20 +130,20 @@ object Utils {
         p.destroy()
         p.exitValue()
         None
-      case _@(_: IOException | _: InterruptedException) => None
+      case _ @(_: IOException | _: InterruptedException) => None
     }
   }
 
   private[gradle] def readPropertiesFile(name: String) = {
-      val input = new FileInputStream(name)
-      try {
-          val properties = new Properties
-          properties.load(input)
-          properties
-      } catch {
-          case e: IOException =>
-              throw new RuntimeException(e)
-      } finally if (input != null) input.close()
+    val input = new FileInputStream(name)
+    try {
+      val properties = new Properties
+      properties.load(input)
+      properties
+    } catch {
+      case e: IOException =>
+        throw new RuntimeException(e)
+    } finally if (input != null) input.close()
   }
 
   private[gradle] def getProperty(properties: Properties, propertyName: String): Option[String] =

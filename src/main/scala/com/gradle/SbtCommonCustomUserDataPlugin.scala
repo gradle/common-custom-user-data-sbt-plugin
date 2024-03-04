@@ -16,21 +16,28 @@ object SbtCommonCustomUserDataPlugin extends AutoPlugin {
   override lazy val buildSettings: Seq[Setting[_]] = Seq(
     DevelocityPlugin.autoImport.develocityConfiguration := applyCCUD(
       DevelocityPlugin.autoImport.develocityConfiguration.value,
-      crossScalaVersions.all(ScopeFilter(inAnyProject)).value.flatten.distinct.sorted)
+      crossScalaVersions.all(ScopeFilter(inAnyProject)).value.flatten.distinct.sorted
+    )
   )
 
-  private def applyCCUD(currentConfiguration: DevelocityConfiguration, scalaVersions: Seq[String]): DevelocityConfiguration = {
+  private def applyCCUD(
+      currentConfiguration: DevelocityConfiguration,
+      scalaVersions: Seq[String]
+  ): DevelocityConfiguration = {
     val scan = currentConfiguration.buildScan
     val server = currentConfiguration.server
 
     val serverConfigTemp = ServerConfigTemp.fromServer(server)
     Overrides.applyTo(serverConfigTemp)
 
-    val newBuildScan = new CustomBuildScanEnhancements(serverConfigTemp, scalaVersions.mkString(",")).withAdditionalData(scan)
+    val newBuildScan =
+      new CustomBuildScanEnhancements(serverConfigTemp, scalaVersions.mkString(",")).withAdditionalData(scan)
 
-    currentConfiguration.withServer(server
-        .withUrl(serverConfigTemp.url())
-        .withAllowUntrusted(serverConfigTemp.allowUntrusted().getOrElse(server.allowUntrusted))
+    currentConfiguration
+      .withServer(
+        server
+          .withUrl(serverConfigTemp.url())
+          .withAllowUntrusted(serverConfigTemp.allowUntrusted().getOrElse(server.allowUntrusted))
       )
       .withBuildScan(newBuildScan)
   }

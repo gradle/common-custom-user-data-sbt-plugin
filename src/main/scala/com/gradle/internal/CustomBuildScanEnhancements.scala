@@ -9,7 +9,7 @@ import sbt.URL
 /**
  * Adds a standard set of useful tags, links and custom values to all build scans published.
  */
-class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: String) {
+class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[String]) {
 
   private val buildScan = new BuildScanTemp()
 

@@ -32,7 +32,7 @@ object SbtCommonCustomUserDataPlugin extends AutoPlugin {
 
     val newServer = Overrides.applyTo(server)
     val newBuildScan =
-      new CustomBuildScanEnhancements(newServer, scalaVersions.mkString(",")).withAdditionalData(scan)
+      new CustomBuildScanEnhancements(newServer, scalaVersions).withAdditionalData(scan)
 
     currentConfiguration
       .withServer(newServer)

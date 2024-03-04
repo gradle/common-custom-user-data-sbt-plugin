@@ -1,23 +1,26 @@
 package com.gradle
 
 import com.gradle.develocity.agent.sbt.DevelocityPlugin
-import com.gradle.develocity.agent.sbt.DevelocityPlugin.autoImport.DevelocityConfiguration
+import com.gradle.develocity.agent.sbt.DevelocityPlugin.autoImport._
 import com.gradle.internal.{CustomBuildScanEnhancements, ServerConfigTemp, Overrides}
 import sbt.Keys._
 import sbt._
 
 object SbtCommonCustomUserDataPlugin extends AutoPlugin {
 
-  override def requires: Plugins = com.gradle.develocity.agent.sbt.DevelocityPlugin
+  override def requires: Plugins = DevelocityPlugin
 
   // This plugin is automatically enabled for projects which have DevelocityPlugin.
   override def trigger = allRequirements
 
   override lazy val buildSettings: Seq[Setting[_]] = Seq(
-    DevelocityPlugin.autoImport.develocityConfiguration := applyCCUD(
-      DevelocityPlugin.autoImport.develocityConfiguration.value,
-      crossScalaVersions.all(ScopeFilter(inAnyProject)).value.flatten.distinct.sorted
-    )
+    DevelocityPlugin.autoImport.develocityConfiguration := {
+      val allScalaVersions = crossScalaVersions.all(ScopeFilter(inAnyProject)).value.flatten.distinct.sorted
+      applyCCUD(
+        DevelocityPlugin.autoImport.develocityConfiguration.value,
+        allScalaVersions
+      )
+    }
   )
 
   private def applyCCUD(

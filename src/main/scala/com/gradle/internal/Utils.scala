@@ -124,7 +124,7 @@ object Utils {
     val f = Future(blocking(p.exitValue())) // wrap in Future
     try {
       if (Await.result(f, duration.Duration(10, "sec")) != 0) None
-      else Some(trimAtEnd(output.result()))
+      else Some(trimAtEnd(output.result())).filter(_.nonEmpty)
     } catch {
       case _: TimeoutException =>
         p.destroy()

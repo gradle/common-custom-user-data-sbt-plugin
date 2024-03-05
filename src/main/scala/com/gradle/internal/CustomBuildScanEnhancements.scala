@@ -65,19 +65,19 @@ class CustomBuildScanEnhancements(serverConfig: ServerConfigTemp, scalaVersions:
 
   private def captureCiMetadata(): Unit = {
       if (isJenkins || isHudson) {
-          val buildUrl: Option[String] = envVariable("BUILD_URL")
+          val buildUrl = envVariable("BUILD_URL")
           val buildNumber: Option[String] = envVariable("BUILD_NUMBER")
           val nodeName: Option[String] = envVariable("NODE_NAME")
           val jobName: Option[String] = envVariable("JOB_NAME")
           val stageName: Option[String] = envVariable("STAGE_NAME")
-          if (buildUrl.isDefined) {
-              val label = if (isJenkins) "Jenkins build" else "Hudson build"
-              buildScan.link(label, buildUrl.get)
-          }
+
+          buildScan.addValue("CI provider", if (isJenkins) "Jenkins" else "Hudson")
+          ifDefined(buildUrl)((value: String) => buildScan.link(if (isJenkins) "Jenkins build" else "Hudson build", value))
           ifDefined(buildNumber)((value: String) => buildScan.addValue("CI build number", value))
           ifDefined(nodeName)((value: String) => addCustomValueAndSearchLink("CI node", value))
           ifDefined(jobName)((value: String) => addCustomValueAndSearchLink("CI job", value))
           ifDefined(stageName)((value: String) => addCustomValueAndSearchLink("CI stage", value))
+
           ifDefined(jobName)((job: String) => ifDefined(buildNumber)((build: String) => {
               val params = Map(
                 "CI job" -> job,
@@ -88,6 +88,7 @@ class CustomBuildScanEnhancements(serverConfig: ServerConfigTemp, scalaVersions:
       }
 
       if (isTeamCity) {
+          buildScan.addValue("CI provider", "TeamCity")
           ifDefined(envVariable("TEAMCITY_BUILD_PROPERTIES_FILE")) { teamcityBuildPropertiesFile =>
               val buildProperties = readPropertiesFile(teamcityBuildPropertiesFile)
               ifDefined(getProperty(buildProperties, "teamcity.build.id")) { teamCityBuildId =>
@@ -112,6 +113,7 @@ class CustomBuildScanEnhancements(serverConfig: ServerConfigTemp, scalaVersions:
       }
 
       if (isCircleCI) {
+          buildScan.addValue("CI provider", "CircleCI")
           ifDefined(envVariable("CIRCLE_BUILD_URL"))((url: String) => buildScan.link("CircleCI build", url))
           ifDefined(envVariable("CIRCLE_BUILD_NUM"))((value: String) => buildScan.addValue("CI build number", value))
           ifDefined(envVariable("CIRCLE_JOB"))((value: String) => addCustomValueAndSearchLink("CI job", value))
@@ -119,6 +121,7 @@ class CustomBuildScanEnhancements(serverConfig: ServerConfigTemp, scalaVersions:
       }
 
       if (isBamboo) {
+          buildScan.addValue("CI provider", "Bamboo")
           ifDefined(envVariable("bamboo_resultsUrl"))((url: String) => buildScan.link("Bamboo build", url))
           ifDefined(envVariable("bamboo_buildNumber"))((value: String) => buildScan.addValue("CI build number", value))
           ifDefined(envVariable("bamboo_planName"))((value: String) => addCustomValueAndSearchLink("CI plan", value))
@@ -127,6 +130,7 @@ class CustomBuildScanEnhancements(serverConfig: ServerConfigTemp, scalaVersions:
       }
 
       if (isGitHubActions) {
+          buildScan.addValue("CI provider", "GitHub Actions")
           val gitHubUrl: Option[String] = envVariable("GITHUB_SERVER_URL")
           val gitRepository: Option[String] = envVariable("GITHUB_REPOSITORY")
           val gitHubRunId: Option[String] = envVariable("GITHUB_RUN_ID")
@@ -138,6 +142,7 @@ class CustomBuildScanEnhancements(serverConfig: ServerConfigTemp, scalaVersions:
       }
 
       if (isGitLab) {
+          buildScan.addValue("CI provider", "GitLab")
           ifDefined(envVariable("CI_JOB_URL"))((url: String) => buildScan.link("GitLab build", url))
           ifDefined(envVariable("CI_PIPELINE_URL"))((url: String) => buildScan.link("GitLab pipeline", url))
           ifDefined(envVariable("CI_JOB_NAME"))((value: String) => addCustomValueAndSearchLink("CI job", value))
@@ -145,6 +150,7 @@ class CustomBuildScanEnhancements(serverConfig: ServerConfigTemp, scalaVersions:
       }
 
       if (isTravis) {
+          buildScan.addValue("CI provider", "Travis")
           ifDefined(envVariable("TRAVIS_BUILD_WEB_URL"))((url: String) => buildScan.link("Travis build", url))
           ifDefined(envVariable("TRAVIS_BUILD_NUMBER"))((value: String) => buildScan.addValue("CI build number", value))
           ifDefined(envVariable("TRAVIS_JOB_NAME"))((value: String) => addCustomValueAndSearchLink("CI job", value))
@@ -152,11 +158,13 @@ class CustomBuildScanEnhancements(serverConfig: ServerConfigTemp, scalaVersions:
       }
 
       if (isBitrise) {
+          buildScan.addValue("CI provider", "Bitrise")
           ifDefined(envVariable("BITRISE_BUILD_URL"))((url: String) => buildScan.link("Bitrise build", url))
           ifDefined(envVariable("BITRISE_BUILD_NUMBER"))((value: String) => buildScan.addValue("CI build number", value))
       }
 
       if (isGoCD) {
+          buildScan.addValue("CI provider", "GoCD")
           val pipelineName: Option[String] = envVariable("GO_PIPELINE_NAME")
           val stageName: Option[String] = envVariable("GO_STAGE_NAME")
           val jobName: Option[String] = envVariable("GO_JOB_NAME")
@@ -184,6 +192,7 @@ class CustomBuildScanEnhancements(serverConfig: ServerConfigTemp, scalaVersions:
       }
 
       if (isAzurePipelines) {
+          buildScan.addValue("CI provider", "Azure Pipelines")
           val azureServerUrl: Option[String] = envVariable("SYSTEM_TEAMFOUNDATIONCOLLECTIONURI")
           val buildId: Option[String] = envVariable("BUILD_BUILDID")
 
@@ -203,6 +212,7 @@ class CustomBuildScanEnhancements(serverConfig: ServerConfigTemp, scalaVersions:
       }
 
       if (isBuildkite) {
+          buildScan.addValue("CI provider", "Buildkite")
           ifDefined(envVariable("BUILDKITE_BUILD_URL"))((url: String) => buildScan.link("Buildkite build", url))
           ifDefined(envVariable("BUILDKITE_COMMAND"))((command: String) => addCustomValueAndSearchLink("CI command", command))
           ifDefined(envVariable("BUILDKITE_BUILD_ID"))((id: String) => buildScan.addValue("CI build ID", id))

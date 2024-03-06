@@ -6,11 +6,12 @@ import com.gradle.internal.CiUtils._
 import com.gradle.internal.Utils._
 import java.util.Properties
 import java.net.URL
+import sbt.Logger
 
 /**
  * Adds a standard set of useful tags, links and custom values to all build scans published.
  */
-class BuildScanTransformer(serverConfig: Server, scalaVersions: Seq[String])(implicit env: Env)
+class BuildScanTransformer(serverConfig: Server, scalaVersions: Seq[String], logger: Logger)(implicit env: Env)
     extends Transformer[BuildScan] {
 
   override def transform(originBuildScan: BuildScan): BuildScan = {
@@ -308,7 +309,7 @@ class BuildScanTransformer(serverConfig: Server, scalaVersions: Seq[String])(imp
 
   private lazy val isGitInstalled: Boolean = {
     val installed = execAndCheckSuccess("git", "--version")
-    if (!installed) println("[info] Git executable missing")
+    if (!installed) logger.info("Git executable missing")
     installed
   }
 

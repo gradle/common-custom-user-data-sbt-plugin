@@ -18,6 +18,7 @@ object SbtCommonCustomUserDataPlugin extends AutoPlugin {
     DevelocityPlugin.autoImport.develocityConfiguration := {
       val allScalaVersions = crossScalaVersions.all(ScopeFilter(inAnyProject)).value.flatten.distinct.sorted
       applyCCUD(
+        sLog.value,
         DevelocityPlugin.autoImport.develocityConfiguration.value,
         allScalaVersions
       )
@@ -25,6 +26,7 @@ object SbtCommonCustomUserDataPlugin extends AutoPlugin {
   )
 
   private def applyCCUD(
+      logger: Logger,
       currentConfiguration: DevelocityConfiguration,
       scalaVersions: Seq[String]
   ): DevelocityConfiguration = {
@@ -33,7 +35,7 @@ object SbtCommonCustomUserDataPlugin extends AutoPlugin {
     val server = currentConfiguration.server
 
     val newServer = new ServerTransformer().transform(server)
-    val newBuildScan = new BuildScanTransformer(newServer, scalaVersions).transform(scan)
+    val newBuildScan = new BuildScanTransformer(newServer, scalaVersions, logger).transform(scan)
 
     currentConfiguration
       .withServer(newServer)

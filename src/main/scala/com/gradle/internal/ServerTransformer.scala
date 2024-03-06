@@ -1,26 +1,19 @@
 package com.gradle.internal
 
-import com.gradle.internal.Utils.{booleanSysPropertyOrEnvVariable, sysPropertyOrEnvVariable}
 import com.gradle.develocity.agent.sbt.api.configuration.Server
+import java.net.URL
 
-object ServerTransformer extends Transformer[Server] {
+class ServerTransformer(implicit env: Env) extends Transformer[Server] {
 
   // System properties to override Develocity configuration
-  private val GRADLE_ENTERPRISE_URL = "gradle.enterprise.url"
-  private val GRADLE_ENTERPRISE_ALLOW_UNTRUSTED_SERVER = "gradle.enterprise.allowUntrustedServer"
+  private val serverUrl = Env.Key[URL]("gradle.enterprise.url")
+  private val allowUntrustedServer = Env.Key[Boolean]("gradle.enterprise.allowUntrustedServer")
 
   override def transform(serverConfig: Server): Server = {
     val ops = Seq(
-      ifDefined(getAllowUntrusted())(_.withAllowUntrusted(_)),
-      ifDefined(getUrl())(_.withUrl(_))
+      ifDefined(env.propOrEnv(allowUntrustedServer))(_.withAllowUntrusted(_)),
+      ifDefined(env.propOrEnv(serverUrl))((bs, url) => bs.withUrl(Some(url)))
     )
-
     Function.chain(ops)(serverConfig)
   }
-
-  private def getAllowUntrusted(): Option[Boolean] = booleanSysPropertyOrEnvVariable(
-    GRADLE_ENTERPRISE_ALLOW_UNTRUSTED_SERVER
-  )
-
-  private def getUrl() = sysPropertyOrEnvVariable(GRADLE_ENTERPRISE_URL).map(u => Some(sbt.url(u)))
 }

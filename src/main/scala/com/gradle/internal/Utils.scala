@@ -13,40 +13,9 @@ object Utils {
   private val GIT_REPO_URI_REGEX =
     "^(?:(?:https://|git://)|(?:ssh)?.*?@)(.*?(?:github|gitlab).*?)(?:/|:[0-9]*?/|:)(.*?)(?:\\.git)?$".r
 
-  private[gradle] def sysPropertyOrEnvVariable(sysPropertyName: String): Option[String] =
-    sysPropertyOrEnvVariable(sysPropertyName, toEnvVarName(sysPropertyName))
-
-  private[gradle] def booleanSysPropertyOrEnvVariable(sysPropertyName: String): Option[Boolean] =
-    booleanSysPropertyOrEnvVariable(sysPropertyName, toEnvVarName(sysPropertyName))
-
-  private def toEnvVarName(sysPropertyName: String) = sysPropertyName.toUpperCase.replace('.', '_')
-
-  private[gradle] def sysPropertyOrEnvVariable(sysPropertyName: String, envVarName: String): Option[String] = {
-    sysProperty(sysPropertyName).orElse(envVariable(envVarName))
-  }
-
-  private[gradle] def booleanSysPropertyOrEnvVariable(sysPropertyName: String, envVarName: String): Option[Boolean] = {
-    booleanSysProperty(sysPropertyName).orElse(booleanEnvVariable(envVarName))
-  }
-
-  private[gradle] def envVariable(name: String): Option[String] = sys.env.get(name)
-
-  private[gradle] def booleanEnvVariable(name: String): Option[Boolean] = envVariable(name).map(parseBoolean)
-
-  private[gradle] def sysProperty(name: String): Option[String] = sys.props.get(name)
-
-  private[gradle] def booleanSysProperty(name: String): Option[Boolean] = sysProperty(name).map(parseBoolean)
-
-  private[gradle] def isNotEmpty(value: Option[String]): Boolean = value.exists(_.nonEmpty)
-
   private[gradle] def appendIfMissing(string: String, suffix: Char): String = {
     if (string.nonEmpty && string.charAt(string.length - 1) == suffix) string
     else string + suffix
-  }
-
-  private def parseBoolean(string: String): Boolean = try string.toBoolean
-  catch {
-    case scala.util.control.NonFatal(_) => false
   }
 
   private def trimAtEnd(str: String) = ('x' + str).trim.substring(1)

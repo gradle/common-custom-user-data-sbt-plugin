@@ -5,6 +5,7 @@ import com.gradle.develocity.agent.sbt.DevelocityPlugin.autoImport._
 import com.gradle.internal.{BuildScanTransformer, ServerTransformer}
 import sbt.Keys._
 import sbt._
+import com.gradle.internal.{Env, SystemEnvironment}
 
 object SbtCommonCustomUserDataPlugin extends AutoPlugin {
 
@@ -27,10 +28,11 @@ object SbtCommonCustomUserDataPlugin extends AutoPlugin {
       currentConfiguration: DevelocityConfiguration,
       scalaVersions: Seq[String]
   ): DevelocityConfiguration = {
+    implicit val env: Env = SystemEnvironment
     val scan = currentConfiguration.buildScan
     val server = currentConfiguration.server
 
-    val newServer = ServerTransformer.transform(server)
+    val newServer = new ServerTransformer().transform(server)
     val newBuildScan = new BuildScanTransformer(newServer, scalaVersions).transform(scan)
 
     currentConfiguration

@@ -3,7 +3,7 @@ package com.gradle.internal
 import com.gradle.develocity.agent.sbt.api.configuration.Server
 import java.net.URL
 
-class ServerTransformer(implicit env: Env) extends Transformer[Server] {
+class Overrides(implicit env: Env) extends Transformer[Server] {
 
   // System properties to override Develocity configuration
   private val serverUrl = Env.Key[URL]("gradle.enterprise.url")

@@ -4,7 +4,7 @@ import com.gradle.develocity.agent.sbt.DevelocityPlugin
 import com.gradle.develocity.agent.sbt.DevelocityPlugin.autoImport.{DevelocityConfiguration, develocityConfiguration}
 import com.gradle.internal.{CustomBuildScanEnhancements, Overrides}
 import sbt.{AutoPlugin, Keys, Logger, Plugins, Setting, ScopeFilter, inAnyProject}
-import com.gradle.internal.{Env, SystemEnvironment}
+import com.gradle.internal.Utils.Env
 
 object SbtCommonCustomUserDataPlugin extends AutoPlugin {
 
@@ -29,7 +29,7 @@ object SbtCommonCustomUserDataPlugin extends AutoPlugin {
       currentConfiguration: DevelocityConfiguration,
       scalaVersions: Seq[String]
   ): DevelocityConfiguration = {
-    implicit val env: Env = SystemEnvironment
+    implicit val env: Env = Env.SystemEnvironment
     val scan = currentConfiguration.buildScan
     val server = currentConfiguration.server
 

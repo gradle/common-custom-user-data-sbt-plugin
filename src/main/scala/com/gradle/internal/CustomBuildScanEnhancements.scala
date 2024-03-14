@@ -2,6 +2,7 @@ package com.gradle.internal
 
 import com.gradle.develocity.agent.sbt.api.configuration.BuildScan
 import com.gradle.develocity.agent.sbt.api.configuration.Server
+import com.gradle.internal.Utils.Env
 import java.util.Properties
 import java.net.URL
 import sbt.Logger
@@ -9,8 +10,9 @@ import sbt.Logger
 /**
  * Adds a standard set of useful tags, links and custom values to all build scans published.
  */
-class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[String], logger: Logger)(implicit env: Env)
-    extends Transformer[BuildScan] {
+class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[String], logger: Logger)(implicit
+    env: Env
+) extends Transformer[BuildScan] {
 
   override def transform(originBuildScan: BuildScan): BuildScan = {
     val ops = Seq(

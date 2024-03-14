@@ -28,16 +28,21 @@ object Utils {
     protected def fromEnvironment(name: String): Option[String]
     protected def fromProperties(name: String): Option[String]
 
-    final def env[T](key: Env.Key[T])(implicit parse: FromString[T]): Option[T] =
+    final def envVariable[T](key: Env.Key[T])(implicit parse: FromString[T]): Option[T] =
       fromEnvironment(key.envVarName).flatMap(parse(_))
-    final def env[T](name: String)(implicit parse: FromString[T]): Option[T] = fromEnvironment(name).flatMap(parse(_))
+    final def envVariable[T](name: String)(implicit parse: FromString[T]): Option[T] =
+      fromEnvironment(name).flatMap(parse(_))
 
-    final def prop[T](key: Env.Key[T])(implicit parse: FromString[T]): Option[T] =
+    final def sysProperty[T](key: Env.Key[T])(implicit parse: FromString[T]): Option[T] =
       fromProperties(key.name).flatMap(parse(_))
-    final def prop[T](name: String)(implicit parse: FromString[T]): Option[T] = fromProperties(name).flatMap(parse(_))
+    final def sysProperty[T](name: String)(implicit parse: FromString[T]): Option[T] =
+      fromProperties(name).flatMap(parse(_))
 
-    final def propOrEnv[T: FromString](name: String): Option[T] = propOrEnv(Env.Key[T](name))
-    final def propOrEnv[T: FromString](key: Env.Key[T]): Option[T] = prop(key).orElse(env(key))
+    final def sysPropertyOrEnvVariable[T: FromString](name: String): Option[T] = sysPropertyOrEnvVariable(
+      Env.Key[T](name)
+    )
+    final def sysPropertyOrEnvVariable[T: FromString](key: Env.Key[T]): Option[T] =
+      sysProperty(key).orElse(envVariable(key))
 
   }
 

@@ -12,8 +12,8 @@ class Overrides(implicit env: Env) extends Transformer[Server] {
 
   override def transform(serverConfig: Server): Server = {
     val ops = Seq(
-      ifDefined(env.propOrEnv(allowUntrustedServer))(_.withAllowUntrusted(_)),
-      ifDefined(env.propOrEnv(serverUrl))((bs, url) => bs.withUrl(Some(url)))
+      ifDefined(env.sysPropertyOrEnvVariable(allowUntrustedServer))(_.withAllowUntrusted(_)),
+      ifDefined(env.sysPropertyOrEnvVariable(serverUrl))((bs, url) => bs.withUrl(Some(url)))
     )
     Function.chain(ops)(serverConfig)
   }

@@ -4,9 +4,10 @@ import java.io.{FileInputStream, IOException, UnsupportedEncodingException}
 import java.net.{URI, URISyntaxException, URLEncoder}
 import java.nio.charset.StandardCharsets
 import java.util.Properties
+import scala.concurrent.{Await, Future, TimeoutException, blocking}
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent._
-import scala.sys.process._
+import scala.concurrent.duration.Duration
+import scala.sys.process.{ProcessLogger, stringToProcess}
 
 object Utils {
 
@@ -67,7 +68,7 @@ object Utils {
     val p = cmd.run() // start asynchronously
     val f = Future(blocking(p.exitValue())) // wrap in Future
     try {
-      Await.result(f, duration.Duration(10, "sec")) == 0
+      Await.result(f, Duration(10, "sec")) == 0
     } catch {
       case _: TimeoutException =>
         p.destroy()
@@ -92,7 +93,7 @@ object Utils {
     val p = cmd.run(logger) // start asynchronously
     val f = Future(blocking(p.exitValue())) // wrap in Future
     try {
-      if (Await.result(f, duration.Duration(10, "sec")) != 0) None
+      if (Await.result(f, Duration(10, "sec")) != 0) None
       else Some(trimAtEnd(output.result())).filter(_.nonEmpty)
     } catch {
       case _: TimeoutException =>

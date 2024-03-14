@@ -1,10 +1,9 @@
 package com.gradle
 
 import com.gradle.develocity.agent.sbt.DevelocityPlugin
-import com.gradle.develocity.agent.sbt.DevelocityPlugin.autoImport._
+import com.gradle.develocity.agent.sbt.DevelocityPlugin.autoImport.{DevelocityConfiguration, develocityConfiguration}
 import com.gradle.internal.{BuildScanTransformer, ServerTransformer}
-import sbt.Keys._
-import sbt._
+import sbt.{AutoPlugin, Keys, Logger, Plugins, Setting, ScopeFilter, inAnyProject}
 import com.gradle.internal.{Env, SystemEnvironment}
 
 object SbtCommonCustomUserDataPlugin extends AutoPlugin {
@@ -16,10 +15,10 @@ object SbtCommonCustomUserDataPlugin extends AutoPlugin {
 
   override lazy val buildSettings: Seq[Setting[_]] = Seq(
     DevelocityPlugin.autoImport.develocityConfiguration := {
-      val allScalaVersions = crossScalaVersions.all(ScopeFilter(inAnyProject)).value.flatten.distinct.sorted
+      val allScalaVersions = Keys.crossScalaVersions.all(ScopeFilter(inAnyProject)).value.flatten.distinct.sorted
       applyCCUD(
-        sLog.value,
-        DevelocityPlugin.autoImport.develocityConfiguration.value,
+        Keys.sLog.value,
+        develocityConfiguration.value,
         allScalaVersions
       )
     }

@@ -2,8 +2,6 @@ package com.gradle.internal
 
 import com.gradle.develocity.agent.sbt.api.configuration.BuildScan
 import com.gradle.develocity.agent.sbt.api.configuration.Server
-import com.gradle.internal.CiUtils._
-import com.gradle.internal.Utils._
 import java.util.Properties
 import java.net.URL
 import sbt.Logger
@@ -31,7 +29,7 @@ class BuildScanTransformer(serverConfig: Server, scalaVersions: Seq[String], log
   }
 
   private val captureIde: BuildScan => BuildScan =
-    if (!isCi) identity
+    if (!CiUtils.isCi) identity
     else {
       val (ide, version) =
         env
@@ -52,17 +50,17 @@ class BuildScanTransformer(serverConfig: Server, scalaVersions: Seq[String], log
     }
 
   private val captureCiOrLocal: BuildScan => BuildScan =
-    _.tag(if (isCi) "CI" else "LOCAL")
+    _.tag(if (CiUtils.isCi) "CI" else "LOCAL")
 
   private val captureJenkinsOrHudson: BuildScan => BuildScan = {
-    if (!isJenkins && !isHudson) identity
+    if (!CiUtils.isJenkins && !CiUtils.isHudson) identity
     else {
       val jobName = env.env[String]("JOB_NAME")
       val buildNumber = env.env[String]("BUILD_NUMBER")
       val ops = Seq(
-        (bs: BuildScan) => bs.value("CI provider", if (isJenkins) "Jenkins" else "Hudson"),
+        (bs: BuildScan) => bs.value("CI provider", if (CiUtils.isJenkins) "Jenkins" else "Hudson"),
         ifDefined(env.env[URL]("BUILD_URL")) { case (bs, url) =>
-          val label = if (isJenkins) "Jenkins build" else "Hudson build"
+          val label = if (CiUtils.isJenkins) "Jenkins build" else "Hudson build"
           bs.link(label, url)
         },
         ifDefined(buildNumber)(_.value("CI build number", _)),
@@ -79,27 +77,27 @@ class BuildScanTransformer(serverConfig: Server, scalaVersions: Seq[String], log
   }
 
   private val captureTeamCity: BuildScan => BuildScan = {
-    if (!isTeamCity) identity
+    if (!CiUtils.isTeamCity) identity
     else {
       def teamCityBuildUrl(properties: Properties) = for {
-        buildId <- getProperty(properties, "teamcity.build.id")
-        encodedBuildId <- urlEncode(buildId)
-        configFile <- getProperty(properties, "teamcity.configuration.properties.file")
-        configProperties = readPropertiesFile(configFile)
-        serverUrl <- getProperty(configProperties, "teamcity.serverUrl")
-        buildUrl = s"${appendIfMissing(serverUrl, '/')}viewLog.html?buildId=$encodedBuildId"
+        buildId <- Utils.getProperty(properties, "teamcity.build.id")
+        encodedBuildId <- Utils.urlEncode(buildId)
+        configFile <- Utils.getProperty(properties, "teamcity.configuration.properties.file")
+        configProperties = Utils.readPropertiesFile(configFile)
+        serverUrl <- Utils.getProperty(configProperties, "teamcity.serverUrl")
+        buildUrl = s"${Utils.appendIfMissing(serverUrl, '/')}viewLog.html?buildId=$encodedBuildId"
       } yield sbt.url(buildUrl)
 
       ifDefined(env.env[String]("TEAMCITY_BUILD_PROPERTIES_FILE")) { (bs, teamCityBuildPropertiesFile) =>
-        val buildProperties = readPropertiesFile(teamCityBuildPropertiesFile)
+        val buildProperties = Utils.readPropertiesFile(teamCityBuildPropertiesFile)
         val ops = Seq(
           (bs: BuildScan) => bs.value("CI provider", "TeamCity"),
           ifDefined(teamCityBuildUrl(buildProperties))(_.link("TeamCity build", _)),
-          ifDefined(getProperty(buildProperties, "build.number"))(_.value("CI build number", _)),
-          ifDefined(getProperty(buildProperties, "teamcity.buildType.id"))(
+          ifDefined(Utils.getProperty(buildProperties, "build.number"))(_.value("CI build number", _)),
+          ifDefined(Utils.getProperty(buildProperties, "teamcity.buildType.id"))(
             withCustomValueAndSearchLink(_, "CI build config", _)
           ),
-          ifDefined(getProperty(buildProperties, "agent.name"))(withCustomValueAndSearchLink(_, "CI agent", _))
+          ifDefined(Utils.getProperty(buildProperties, "agent.name"))(withCustomValueAndSearchLink(_, "CI agent", _))
         )
         Function.chain(ops)(bs)
       }
@@ -107,7 +105,7 @@ class BuildScanTransformer(serverConfig: Server, scalaVersions: Seq[String], log
   }
 
   private val captureCircleCi: BuildScan => BuildScan = {
-    if (!isCircleCI) identity
+    if (!CiUtils.isCircleCI) identity
     else {
       val ops = Seq(
         (bs: BuildScan) => bs.value("CI provider", "CircleCI"),
@@ -121,7 +119,7 @@ class BuildScanTransformer(serverConfig: Server, scalaVersions: Seq[String], log
   }
 
   private val captureBamboo: BuildScan => BuildScan = {
-    if (!isBamboo) identity
+    if (!CiUtils.isBamboo) identity
     else {
       val ops = Seq(
         (bs: BuildScan) => bs.value("CI provider", "Bamboo"),
@@ -136,7 +134,7 @@ class BuildScanTransformer(serverConfig: Server, scalaVersions: Seq[String], log
   }
 
   private val captureGitHubActions: BuildScan => BuildScan = {
-    if (!isGitHubActions) identity
+    if (!CiUtils.isGitHubActions) identity
     else {
       val buildUrl = for {
         url <- env.env[URL]("GITHUB_SERVER_URL")
@@ -155,7 +153,7 @@ class BuildScanTransformer(serverConfig: Server, scalaVersions: Seq[String], log
   }
 
   private val captureGitLab: BuildScan => BuildScan = {
-    if (!isGitLab) identity
+    if (!CiUtils.isGitLab) identity
     else {
       val ops = Seq(
         (bs: BuildScan) => bs.value("CI provider", "GitLab"),
@@ -169,7 +167,7 @@ class BuildScanTransformer(serverConfig: Server, scalaVersions: Seq[String], log
   }
 
   private val captureTravis: BuildScan => BuildScan = {
-    if (!isTravis) identity
+    if (!CiUtils.isTravis) identity
     else {
       val ops = Seq(
         (bs: BuildScan) => bs.value("CI provider", "Travis"),
@@ -183,7 +181,7 @@ class BuildScanTransformer(serverConfig: Server, scalaVersions: Seq[String], log
   }
 
   private val captureBitrise: BuildScan => BuildScan = {
-    if (!isBitrise) identity
+    if (!CiUtils.isBitrise) identity
     else {
       val ops = Seq(
         (bs: BuildScan) => bs.value("CI provider", "Bitrise"),
@@ -195,7 +193,7 @@ class BuildScanTransformer(serverConfig: Server, scalaVersions: Seq[String], log
   }
 
   private val captureGoCd: BuildScan => BuildScan = {
-    if (!isGoCD) identity
+    if (!CiUtils.isGoCD) identity
     else {
       val pipelineName = env.env[String]("GO_PIPELINE_NAME")
       val stageName = env.env[String]("GO_STAGE_NAME")
@@ -225,7 +223,7 @@ class BuildScanTransformer(serverConfig: Server, scalaVersions: Seq[String], log
   }
 
   private val captureAzurePipelines: BuildScan => BuildScan = {
-    if (!isAzurePipelines) identity
+    if (!CiUtils.isAzurePipelines) identity
     else {
       val azureServerUrl = env.env[URL]("SYSTEM_TEAMFOUNDATIONCOLLECTIONURI")
       val buildId = env.env[String]("BUILD_BUILDID")
@@ -246,11 +244,11 @@ class BuildScanTransformer(serverConfig: Server, scalaVersions: Seq[String], log
   }
 
   private val captureBuildkite: BuildScan => BuildScan = {
-    if (!isBuildkite) identity
+    if (!CiUtils.isBuildkite) identity
     else {
       val prSource = for {
         repository <- env.env[String]("BUILDKITE_PULL_REQUEST_REPO")
-        webRepoUri <- toWebRepoUri(repository)
+        webRepoUri <- Utils.toWebRepoUri(repository)
         prNumber <- env.env[String]("BUILDKITE_PULL_REQUEST")
       } yield sbt.url(s"$webRepoUri/pull/$prNumber")
 
@@ -285,11 +283,11 @@ class BuildScanTransformer(serverConfig: Server, scalaVersions: Seq[String], log
   private val captureGitMetadata: BuildScan => BuildScan = {
     if (!isGitInstalled) identity
     else {
-      val gitRepo = execAndGetStdOut("git", "config", "--get", "remote.origin.url")
-      val gitCommitId = execAndGetStdOut("git", "rev-parse", "--verify", "HEAD")
-      val gitCommitShortId = execAndGetStdOut("git", "rev-parse", "--short=8", "--verify", "HEAD")
+      val gitRepo = Utils.execAndGetStdOut("git", "config", "--get", "remote.origin.url")
+      val gitCommitId = Utils.execAndGetStdOut("git", "rev-parse", "--verify", "HEAD")
+      val gitCommitShortId = Utils.execAndGetStdOut("git", "rev-parse", "--short=8", "--verify", "HEAD")
       val gitBranchName = getGitBranchName()
-      val gitStatus = execAndGetStdOut("git", "status", "--porcelain")
+      val gitStatus = Utils.execAndGetStdOut("git", "status", "--porcelain")
       val githubRepositoryLink = for {
         githubUrl <- env.env[URL]("GITHUB_SERVER_URL")
         repository <- env.env[String]("GITHUB_REPOSITORY")
@@ -298,7 +296,7 @@ class BuildScanTransformer(serverConfig: Server, scalaVersions: Seq[String], log
       lazy val webRepo = for {
         origin <- gitRepo
         commit <- gitCommitId
-        webRepoUri <- toWebRepoUri(origin)
+        webRepoUri <- Utils.toWebRepoUri(origin)
         host = webRepoUri.getHost
         if host.contains("github") || host.contains("gitlab")
       } yield {
@@ -307,7 +305,7 @@ class BuildScanTransformer(serverConfig: Server, scalaVersions: Seq[String], log
       }
 
       val ops = Seq(
-        ifDefined(gitRepo)((bs, repo) => bs.value("Git repository", redactUserInfo(repo))),
+        ifDefined(gitRepo)((bs, repo) => bs.value("Git repository", Utils.redactUserInfo(repo))),
         ifDefined(gitCommitId)(_.value("Git commit id", _)),
         ifDefined(gitCommitShortId)(withCustomValueAndSearchLink(_, "Git commit id", "Git commit id short", _)),
         ifDefined(gitBranchName) { (bs, branch) => bs.tag(branch).value("Git branch", branch) },
@@ -319,22 +317,22 @@ class BuildScanTransformer(serverConfig: Server, scalaVersions: Seq[String], log
   }
 
   private lazy val isGitInstalled: Boolean = {
-    val installed = execAndCheckSuccess("git", "--version")
+    val installed = Utils.execAndCheckSuccess("git", "--version")
     if (!installed) logger.info("Git executable missing")
     installed
   }
 
   private def getGitBranchName(): Option[String] = {
     val branch =
-      if (isJenkins || isHudson) env.env[String]("BRANCH_NAME")
-      else if (isGitLab) env.env[String]("CI_COMMIT_REF_NAME")
-      else if (isAzurePipelines) env.env[String]("BUILD_SOURCEBRANCH")
-      else if (isBuildkite) env.env[String]("BUILDKITE_BRANCH")
+      if (CiUtils.isJenkins || CiUtils.isHudson) env.env[String]("BRANCH_NAME")
+      else if (CiUtils.isGitLab) env.env[String]("CI_COMMIT_REF_NAME")
+      else if (CiUtils.isAzurePipelines) env.env[String]("BUILD_SOURCEBRANCH")
+      else if (CiUtils.isBuildkite) env.env[String]("BUILDKITE_BRANCH")
       else None
     branch.orElse(gitBranchFromGit())
   }
 
-  private def gitBranchFromGit(): Option[String] = execAndGetStdOut("git", "rev-parse", "--abbrev-ref", "HEAD")
+  private def gitBranchFromGit(): Option[String] = Utils.execAndGetStdOut("git", "rev-parse", "--abbrev-ref", "HEAD")
 
   private def withCustomValueAndSearchLink(buildScan: BuildScan, name: String, value: String): BuildScan =
     withSearchLink(buildScan.value(name, value), name, name, value)
@@ -352,12 +350,13 @@ class BuildScanTransformer(serverConfig: Server, scalaVersions: Seq[String], log
       case None =>
         buildScan
       case Some(server) =>
-        val params = urlEncode(name).map(n => "&search.names=" + n).getOrElse("") + urlEncode(value)
+        val params = Utils.urlEncode(name).map(n => "&search.names=" + n).getOrElse("") + Utils
+          .urlEncode(value)
           .map(v => "&search.values=" + v)
           .getOrElse("")
         val searchParams = params.replaceFirst("&", "")
-        val buildScanSelection = urlEncode("{SCAN_ID}").map(s => "#selection.buildScanB=" + s).getOrElse("")
-        val url = appendIfMissing(server.toString, '/') + "scans?" + searchParams + buildScanSelection
+        val buildScanSelection = Utils.urlEncode("{SCAN_ID}").map(s => "#selection.buildScanB=" + s).getOrElse("")
+        val url = Utils.appendIfMissing(server.toString, '/') + "scans?" + searchParams + buildScanSelection
         buildScan.link(s"$label build scans", sbt.url(url))
     }
   }

@@ -9,7 +9,7 @@ import sbt.Logger
 /**
  * Adds a standard set of useful tags, links and custom values to all build scans published.
  */
-class BuildScanTransformer(serverConfig: Server, scalaVersions: Seq[String], logger: Logger)(implicit env: Env)
+class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[String], logger: Logger)(implicit env: Env)
     extends Transformer[BuildScan] {
 
   override def transform(originBuildScan: BuildScan): BuildScan = {

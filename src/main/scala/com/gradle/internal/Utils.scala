@@ -11,6 +11,9 @@ import scala.sys.process.{ProcessLogger, stringToProcess}
 
 object Utils {
 
+  private val GIT_REPO_URI_REGEX =
+    "^(?:(?:https://|git://)|(?:ssh)?.*?@)(.*?(?:github|gitlab).*?)(?:/|:[0-9]*?/|:)(.*?)(?:\\.git)?$".r
+
   object Env {
     case class Key[T](name: String) {
       def envVarName: String = toEnvVarName(name)
@@ -45,9 +48,6 @@ object Utils {
       sysProperty(key).orElse(envVariable(key))
 
   }
-
-  private val GIT_REPO_URI_REGEX =
-    "^(?:(?:https://|git://)|(?:ssh)?.*?@)(.*?(?:github|gitlab).*?)(?:/|:[0-9]*?/|:)(.*?)(?:\\.git)?$".r
 
   private[gradle] def appendIfMissing(string: String, suffix: Char): String = {
     if (string.nonEmpty && string.charAt(string.length - 1) == suffix) string

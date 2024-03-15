@@ -40,6 +40,8 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
           .sysProperty[String]("idea.vendor.name")
           .filter(_ == "JetBrains")
           .map(_ => ("IntelliJ IDEA", env.sysProperty(SYSTEM_PROP_IDEA_VERSION)))
+          // this case should be handled by the ideaVendorName condition but keeping it for compatibility reason
+          // (ideaVendorName started with 2020.1)
           .orElse(env.sysProperty(SYSTEM_PROP_IDEA_VERSION).map(v => ("IntelliJ IDEA", Some(v))))
           .orElse(env.sysProperty[String]("idea.managed").map(_ => ("IntelliJ IDEA", None)))
           .orElse(env.sysProperty[String]("eclipse.buildId").map(v => ("Eclipse", Some(v))))

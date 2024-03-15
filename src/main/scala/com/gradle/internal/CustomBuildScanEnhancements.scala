@@ -57,6 +57,24 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
   private val captureCiOrLocal: BuildScan => BuildScan =
     _.tag(if (CiUtils.isCi) "CI" else "LOCAL")
 
+  private lazy val captureCiMetadata: BuildScan => BuildScan = {
+    val ops = Seq(
+      captureJenkinsOrHudson,
+      captureTeamCity,
+      captureCircleCi,
+      captureBamboo,
+      captureGitHubActions,
+      captureGitLab,
+      captureTravis,
+      captureBitrise,
+      captureGoCd,
+      captureAzurePipelines,
+      captureBuildkite
+    )
+    Function.chain(ops)
+  }
+
+
   private val captureJenkinsOrHudson: BuildScan => BuildScan = {
     if (!CiUtils.isJenkins && !CiUtils.isHudson) identity
     else {
@@ -266,23 +284,6 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
       )
       Function.chain(ops)
     }
-  }
-
-  private val captureCiMetadata: BuildScan => BuildScan = {
-    val ops = Seq(
-      captureJenkinsOrHudson,
-      captureTeamCity,
-      captureCircleCi,
-      captureBamboo,
-      captureGitHubActions,
-      captureGitLab,
-      captureTravis,
-      captureBitrise,
-      captureGoCd,
-      captureAzurePipelines,
-      captureBuildkite
-    )
-    Function.chain(ops)
   }
 
   private val captureGitMetadata: BuildScan => BuildScan = {

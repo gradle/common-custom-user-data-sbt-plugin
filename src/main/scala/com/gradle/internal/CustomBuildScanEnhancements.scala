@@ -48,7 +48,6 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
           .getOrElse(("Cmd Line", None))
 
       val ops = Seq(
-        ifDefined(env.sysProperty[Unit]("idea.sync.active"))((bs, _) => bs.tag("IDE sync")),
         (bs: BuildScan) => bs.tag(ide),
         ifDefined(version)((bs, v) => bs.tag(s"$ide version $v"))
       )

@@ -14,6 +14,8 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
     env: Env
 ) extends Transformer[BuildScan] {
 
+  private val SYSTEM_PROP_IDEA_VERSION = Env.Key[String]("idea.version")
+
   override def transform(originBuildScan: BuildScan): BuildScan = {
     val ops = Seq(
       captureOs,
@@ -37,8 +39,8 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
         env
           .sysProperty[String]("idea.vendor.name")
           .filter(_ == "JetBrains")
-          .map(_ => ("IntelliJ IDEA", env.sysProperty[String]("idea.version")))
-          .orElse(env.sysProperty[String]("idea.version").map(v => ("IntelliJ IDEA", Some(v))))
+          .map(_ => ("IntelliJ IDEA", env.sysProperty(SYSTEM_PROP_IDEA_VERSION)))
+          .orElse(env.sysProperty(SYSTEM_PROP_IDEA_VERSION).map(v => ("IntelliJ IDEA", Some(v))))
           .orElse(env.sysProperty[String]("idea.managed").map(_ => ("IntelliJ IDEA", None)))
           .orElse(env.sysProperty[String]("eclipse.buildId").map(v => ("Eclipse", Some(v))))
           .getOrElse(("Cmd Line", None))

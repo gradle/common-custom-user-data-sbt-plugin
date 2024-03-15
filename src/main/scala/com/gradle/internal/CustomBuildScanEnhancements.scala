@@ -334,10 +334,8 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
       else if (CiUtils.isAzurePipelines) env.envVariable[String]("BUILD_SOURCEBRANCH")
       else if (CiUtils.isBuildkite) env.envVariable[String]("BUILDKITE_BRANCH")
       else None
-    branch.orElse(gitBranchFromGit())
+    branch.orElse(Utils.execAndGetStdOut("git", "rev-parse", "--abbrev-ref", "HEAD"))
   }
-
-  private def gitBranchFromGit(): Option[String] = Utils.execAndGetStdOut("git", "rev-parse", "--abbrev-ref", "HEAD")
 
   private def withCustomValueAndSearchLink(buildScan: BuildScan, name: String, value: String): BuildScan =
     withSearchLink(buildScan.value(name, value), name, name, value)

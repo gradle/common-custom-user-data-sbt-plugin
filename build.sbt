@@ -6,7 +6,6 @@ ThisBuild / organization := "com.gradle"
 ThisBuild / organizationName := "gradle"
 
 sbtPlugin := true
-publishMavenStyle := true
 resolvers += Resolver.mavenLocal
 
 Global / develocityConfiguration :=
@@ -41,30 +40,26 @@ lazy val sbtCommonCustomUserDataPlugin = (project in file("."))
     addSbtPlugin(develocityPlugin)
   )
 
-// Uncomment the following for publishing to Sonatype.
-// See https://www.scala-sbt.org/1.x/docs/Using-Sonatype.html for more detail.
+// Publishing setup
+ThisBuild / description := "A sbt plugin to capture common custom user data used for sbt Build Scans in Develocity"
+ThisBuild / licenses    := List("Apache-2.0" -> new URL("http://www.apache.org/licenses/LICENSE-2.0.txt"))
+ThisBuild / homepage    := Some(url("https://github.com/gradle/sbt-common-custom-user-data"))
+ThisBuild / scmInfo := Some(
+  ScmInfo(
+    url("https://github.com/gradle/sbt-common-custom-user-data"),
+    "scm:git@github.com:gradle/sbt-common-custom-user-data.git"
+  )
+)
+// Remove all additional repository other than Maven Central from POM
+ThisBuild / pomIncludeRepository := { _ => false }
+ThisBuild / publishMavenStyle := true
+ThisBuild / versionScheme := Some("semver-spec")
+ThisBuild / publishTo := {
+  val artifactory = "https://repo.grdev.net/artifactory/"
+  if (isSnapshot.value) Some("sbtSnapshot" at artifactory + "enterprise-libs-sbt-snapshots-local")
+  else Some("sbtReleaseCandidate" at artifactory + "enterprise-libs-sbt-release-candidates-local")
+}
 
-// ThisBuild / description := "Some descripiton about your project."
-// ThisBuild / licenses    := List("Apache 2" -> new URL("http://www.apache.org/licenses/LICENSE-2.0.txt"))
-// ThisBuild / homepage    := Some(url("https://github.com/example/project"))
-// ThisBuild / scmInfo := Some(
-//   ScmInfo(
-//     url("https://github.com/your-account/your-project"),
-//     "scm:git@github.com:your-account/your-project.git"
-//   )
-// )
-// ThisBuild / developers := List(
-//   Developer(
-//     id    = "Your identifier",
-//     name  = "Your Name",
-//     email = "your@email",
-//     url   = url("http://your.url")
-//   )
-// )
-// ThisBuild / pomIncludeRepository := { _ => false }
-// ThisBuild / publishTo := {
-//   val nexus = "https://oss.sonatype.org/"
-//   if (isSnapshot.value) Some("snapshots" at nexus + "content/repositories/snapshots")
-//   else Some("releases" at nexus + "service/local/staging/deploy/maven2")
-// }
-// ThisBuild / publishMavenStyle := true
+addCommandAlias("publishSbtPluginPublicationToMavenLocalRepository", "; set publishTo := Some(MavenCache(\"local-maven\", file(\"target/localRepo\"))) ; publish") ++
+addCommandAlias("publishAll", "; set publishTo := Some(\"sbtSnapshot\" at \"https://repo.grdev.net/artifactory/enterprise-libs-sbt-snapshots-local\") ; publish") ++ // Publish to Snapshots
+addCommandAlias("publishRc", "; set publishTo := Some(\"sbtReleaseCandidate\" at \"https://repo.grdev.net/artifactory/enterprise-libs-sbt-release-candidates-local\") ; publish") // Publish to RC

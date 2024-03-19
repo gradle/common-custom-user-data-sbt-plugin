@@ -7,7 +7,7 @@ import java.net.URL
 class Overrides(implicit env: Env) extends Transformer[Server] {
 
   // System properties to override Develocity configuration
-  private val serverUrl = Env.Key[URL]("develocity.url")
+  private val serverUrl = Env.Key[URL]("gradle.enterprise.url")
   private val allowUntrustedServer = Env.Key[Boolean]("develocity.allowUntrustedServer")
 
   override def transform(serverConfig: Server): Server = {

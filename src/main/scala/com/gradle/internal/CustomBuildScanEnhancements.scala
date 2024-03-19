@@ -74,7 +74,7 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
 
       val ops = Seq(
         (bs: BuildScan) => bs.tag(ide),
-        ifDefined(version)((bs, v) => bs.tag(s"$ide version $v"))
+        ifDefined(version)((bs, v) => bs.value(s"$ide version", v))
       )
       Function.chain(ops)
     }

@@ -157,7 +157,7 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
       val ops = Seq(
         (bs: BuildScan) => bs.value("CI provider", "CircleCI"),
         ifDefined(env.envVariable[URL]("CIRCLE_BUILD_URL"))(_.link("CircleCI build", _)),
-        ifDefined(env.envVariable[String]("CIRCLE_BUILD_NUM"))(_.value("CircleCI build number", _)),
+        ifDefined(env.envVariable[String]("CIRCLE_BUILD_NUM"))(_.value("CI build number", _)),
         ifDefined(env.envVariable[String]("CIRCLE_JOB"))(withCustomValueAndSearchLink(_, "CI job", _)),
         ifDefined(env.envVariable[String]("CIRCLE_WORKFLOW_ID"))(withCustomValueAndSearchLink(_, "CI workflow", _))
       )
@@ -303,7 +303,7 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
         (bs: BuildScan) => bs.value("CI provider", "Buildkite"),
         ifDefined(env.envVariable[URL]("BUILDKITE_BUILD_URL"))(_.link("Buildkite build", _)),
         ifDefined(env.envVariable[String]("BUILDKITE_COMMAND"))(withCustomValueAndSearchLink(_, "CI command", _)),
-        ifDefined(env.envVariable[String]("BUILDKITE_BUILD_ID"))(_.value("CI build number", _)),
+        ifDefined(env.envVariable[String]("BUILDKITE_BUILD_ID"))(_.value("CI build ID", _)),
         ifDefined(prSource)(_.link("PR source", _))
       )
       Function.chain(ops)

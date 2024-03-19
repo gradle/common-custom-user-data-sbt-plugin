@@ -51,6 +51,14 @@ ThisBuild / scmInfo := Some(
     "scm:git@github.com:ribafish/sbt-common-custom-user-data.git"
   )
 )
+ThisBuild / developers := List(
+  Developer(
+    id = "gradle",
+    name = "The Gradle team",
+    email = "info@gradle.com",
+    url = url("https://gradle.com")
+  )
+)
 // Remove all additional repository other than Maven Central from POM
 ThisBuild / pomIncludeRepository := { _ => false }
 ThisBuild / publishMavenStyle := true

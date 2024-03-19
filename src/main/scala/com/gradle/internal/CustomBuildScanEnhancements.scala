@@ -58,7 +58,7 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
   }
 
   private val captureIde: BuildScan => BuildScan =
-    if (!isCi) identity
+    if (isCi) identity
     else {
       val (ide, version) =
         env

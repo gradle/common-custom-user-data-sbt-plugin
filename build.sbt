@@ -61,13 +61,11 @@ ThisBuild / pomIncludeRepository := { _ => false }
 ThisBuild / publishMavenStyle := true
 ThisBuild / versionScheme := Some("semver-spec")
 ThisBuild / publishTo := {
-  val ossrh = "https://s01.oss.sonatype.org/"
-  if (isSnapshot.value) Some("ossrh" at ossrh + "content/repositories/snapshots")
-  else Some("ossrh" at ossrh + "service/local/staging/deploy/maven2")
+  if (isSnapshot.value) Some("ossrh" at "https://s01.oss.sonatype.org/content/repositories/snapshots")
+  else Some("ossrh" at "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2")
 }
 credentials += Credentials("Artifactory", "https://repo.grdev.net/artifactory", sys.env.getOrElse("ARTIFACTORY_REPO_USER", ""), sys.env.getOrElse("ARTIFACTORY_REPO_PASSWORD", ""))
-credentials += Credentials("OSSRH", "https://s01.oss.sonatype.org", sys.env.getOrElse("OSSRH_REPO_USER", ""), sys.env.getOrElse("OSSRH_REPO_PASSWORD", ""))
+credentials += Credentials("ossrh", "https://s01.oss.sonatype.org", sys.env.getOrElse("OSSRH_REPO_USER", ""), sys.env.getOrElse("OSSRH_REPO_PASSWORD", ""))
 
-addCommandAlias("publishSbtPluginPublicationToMavenLocalRepository", "; set publishTo := Some(MavenCache(\"local-maven\", file(\"target/localRepo\"))) ; publish") ++
-addCommandAlias("publishAll", "; set publishTo := Some(\"sbtSnapshot\" at \"https://repo.grdev.net/artifactory/enterprise-libs-sbt-snapshots-local\") ; publish") ++ // Publish to Snapshots
-addCommandAlias("publishRc", "; set publishTo := Some(\"sbtReleaseCandidate\" at \"https://repo.grdev.net/artifactory/enterprise-libs-sbt-release-candidates-local\") ; publish") // Publish to RC
+addCommandAlias("publishSbtSnapshot", "; set publishTo := Some(\"SbtSnapshot\" at \"https://repo.grdev.net/artifactory/enterprise-libs-sbt-snapshots-local\") ; publish") ++
+addCommandAlias("publishSbtRc", "; set publishTo := Some(\"SbtReleaseCandidate\" at \"https://repo.grdev.net/artifactory/enterprise-libs-sbt-release-candidates-local\") ; publish")

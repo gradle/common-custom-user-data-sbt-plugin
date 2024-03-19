@@ -1,5 +1,4 @@
-resolvers += Resolver.mavenLocal
-//lazy val dvVersion = "0.11-for-local-testing"
-lazy val dvVersion = "1.0"
-addSbtPlugin("com.gradle" % "sbt-develocity" % dvVersion)
+resolvers += "Artifactory" at "https://repo.grdev.net/artifactory/public/"
+
+addSbtPlugin("com.gradle" % "sbt-develocity" % "1.0-rc-3")
 //addSbtPlugin("com.gradle" % "sbt-common-custom-user-data" % "1.0-SNAPSHOT")

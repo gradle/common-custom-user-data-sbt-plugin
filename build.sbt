@@ -6,6 +6,7 @@ ThisBuild / organization := "com.gradle"
 ThisBuild / organizationName := "gradle"
 
 sbtPlugin := true
+resolvers += "Artifactory" at "https://repo.grdev.net/artifactory/public/"
 resolvers += Resolver.mavenLocal
 
 Global / develocityConfiguration :=
@@ -46,8 +47,8 @@ ThisBuild / licenses    := List("Apache-2.0" -> new URL("http://www.apache.org/l
 ThisBuild / homepage    := Some(url("https://github.com/gradle/sbt-common-custom-user-data"))
 ThisBuild / scmInfo := Some(
   ScmInfo(
-    url("https://github.com/gradle/sbt-common-custom-user-data"),
-    "scm:git@github.com:gradle/sbt-common-custom-user-data.git"
+    url("https://github.com/ribafish/sbt-common-custom-user-data"),
+    "scm:git@github.com:ribafish/sbt-common-custom-user-data.git"
   )
 )
 // Remove all additional repository other than Maven Central from POM
@@ -59,6 +60,7 @@ ThisBuild / publishTo := {
   if (isSnapshot.value) Some("sbtSnapshot" at artifactory + "enterprise-libs-sbt-snapshots-local")
   else Some("sbtReleaseCandidate" at artifactory + "enterprise-libs-sbt-release-candidates-local")
 }
+credentials += Credentials("Artifactory", "https://repo.grdev.net/artifactory", sys.env.getOrElse("ARTIFACTORY_REPO_USER", ""), sys.env.getOrElse("ARTIFACTORY_REPO_PASSWORD", ""))
 
 addCommandAlias("publishSbtPluginPublicationToMavenLocalRepository", "; set publishTo := Some(MavenCache(\"local-maven\", file(\"target/localRepo\"))) ; publish") ++
 addCommandAlias("publishAll", "; set publishTo := Some(\"sbtSnapshot\" at \"https://repo.grdev.net/artifactory/enterprise-libs-sbt-snapshots-local\") ; publish") ++ // Publish to Snapshots

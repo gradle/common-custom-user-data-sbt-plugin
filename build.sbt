@@ -3,17 +3,14 @@ import Dependencies.*
 ThisBuild / scalaVersion := "2.12.15"
 ThisBuild / version := "1.0-SNAPSHOT"
 ThisBuild / organization := "com.gradle"
-ThisBuild / organizationName := "gradle"
+ThisBuild / organizationName := "com.gradle"
 
 sbtPlugin := true
-resolvers += "Artifactory" at "https://repo.grdev.net/artifactory/public/"
-resolvers += Resolver.mavenLocal
 
 Global / develocityConfiguration :=
   DevelocityConfiguration(
     server = Server(
-//      url = Some(url("https://ge.solutions-team.gradle.com"))
-        url = Some(url("https://ge-helm-cluster-unstable.grdev.net"))
+      url = Some(url("https://ge.solutions-team.gradle.com"))
     ),
     buildScan = BuildScan(
       tags = Set(),

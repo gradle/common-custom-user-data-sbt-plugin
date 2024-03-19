@@ -3,7 +3,7 @@ import Dependencies.*
 ThisBuild / scalaVersion := "2.12.15"
 ThisBuild / version := "1.0-SNAPSHOT"
 ThisBuild / organization := "com.gradle"
-ThisBuild / organizationName := "com.gradle"
+ThisBuild / organizationName := "Gradle Inc."
 
 sbtPlugin := true
 
@@ -61,11 +61,12 @@ ThisBuild / pomIncludeRepository := { _ => false }
 ThisBuild / publishMavenStyle := true
 ThisBuild / versionScheme := Some("semver-spec")
 ThisBuild / publishTo := {
-  val artifactory = "https://repo.grdev.net/artifactory/"
-  if (isSnapshot.value) Some("sbtSnapshot" at artifactory + "enterprise-libs-sbt-snapshots-local")
-  else Some("sbtReleaseCandidate" at artifactory + "enterprise-libs-sbt-release-candidates-local")
+  val ossrh = "https://s01.oss.sonatype.org/"
+  if (isSnapshot.value) Some("ossrh" at ossrh + "content/repositories/snapshots")
+  else Some("ossrh" at ossrh + "service/local/staging/deploy/maven2")
 }
 credentials += Credentials("Artifactory", "https://repo.grdev.net/artifactory", sys.env.getOrElse("ARTIFACTORY_REPO_USER", ""), sys.env.getOrElse("ARTIFACTORY_REPO_PASSWORD", ""))
+credentials += Credentials("OSSRH", "https://s01.oss.sonatype.org", sys.env.getOrElse("OSSRH_REPO_USER", ""), sys.env.getOrElse("OSSRH_REPO_PASSWORD", ""))
 
 addCommandAlias("publishSbtPluginPublicationToMavenLocalRepository", "; set publishTo := Some(MavenCache(\"local-maven\", file(\"target/localRepo\"))) ; publish") ++
 addCommandAlias("publishAll", "; set publishTo := Some(\"sbtSnapshot\" at \"https://repo.grdev.net/artifactory/enterprise-libs-sbt-snapshots-local\") ; publish") ++ // Publish to Snapshots

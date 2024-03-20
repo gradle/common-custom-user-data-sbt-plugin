@@ -3,25 +3,21 @@ import Dependencies.*
 ThisBuild / scalaVersion := "2.12.15"
 ThisBuild / version := "1.0-SNAPSHOT"
 ThisBuild / organization := "com.gradle"
-ThisBuild / organizationName := "gradle"
+ThisBuild / organizationName := "Gradle Inc."
 
 sbtPlugin := true
-publishMavenStyle := true
-resolvers += Resolver.mavenLocal
 
 Global / develocityConfiguration :=
   DevelocityConfiguration(
     server = Server(
-//      url = Some(url("https://ge.solutions-team.gradle.com"))
-        url = Some(url("https://ge-helm-cluster-unstable.grdev.net"))
+      url = Some(url("https://ge.solutions-team.gradle.com"))
     ),
     buildScan = BuildScan(
-      tags = Set(),
       obfuscation = Obfuscation(
         ipAddresses = _.map(_ => "0.0.0.0")
       ),
       backgroundUpload = !sys.env.contains("CI"),
-      publishing = Publishing.onlyIf(_ => true),
+      publishing = Publishing.onlyIf { _.authenticated },
     )
   )
 
@@ -46,30 +42,44 @@ lazy val sbtCommonCustomUserDataPlugin = (project in file("."))
     addSbtPlugin(develocityPlugin)
   )
 
-// Uncomment the following for publishing to Sonatype.
-// See https://www.scala-sbt.org/1.x/docs/Using-Sonatype.html for more detail.
+// Publishing setup
+ThisBuild / description := "A sbt plugin to capture common custom user data used for sbt Build Scans in Develocity"
+ThisBuild / licenses    := List("Apache-2.0" -> new URL("http://www.apache.org/licenses/LICENSE-2.0.txt"))
+ThisBuild / homepage    := Some(url("https://github.com/gradle/sbt-common-custom-user-data"))
+ThisBuild / scmInfo := Some(
+  ScmInfo(
+    url("https://github.com/ribafish/sbt-common-custom-user-data"),
+    "scm:git@github.com:ribafish/sbt-common-custom-user-data.git"
+  )
+)
+ThisBuild / developers := List(
+  Developer(
+    id = "gradle",
+    name = "The Gradle team",
+    email = "info@gradle.com",
+    url = url("https://gradle.com")
+  )
+)
+// Remove all additional repository other than Maven Central from POM
+ThisBuild / pomIncludeRepository := { _ => false }
+ThisBuild / publishMavenStyle := true
+ThisBuild / versionScheme := Some("semver-spec")
+ThisBuild / publishTo := {
+  if (isSnapshot.value) Some("ossrh" at "https://s01.oss.sonatype.org/content/repositories/snapshots")
+  else Some("ossrh" at "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2")
+}
+credentials ++= {
+  for {
+    username <- sys.env.get("OSSRH_REPO_USER")
+    password <- sys.env.get("OSSRH_REPO_PASSWORD")
+  } yield Credentials("Sonatype Nexus Repository Manager", "s01.oss.sonatype.org", username, password)
+}
+credentials ++= {
+  for {
+    username <- sys.env.get("ARTIFACTORY_REPO_USER")
+    password <- sys.env.get("ARTIFACTORY_REPO_PASSWORD")
+  } yield Credentials("Artifactory Realm", "repo.grdev.net", username, password)
+}
 
-// ThisBuild / description := "Some descripiton about your project."
-// ThisBuild / licenses    := List("Apache 2" -> new URL("http://www.apache.org/licenses/LICENSE-2.0.txt"))
-// ThisBuild / homepage    := Some(url("https://github.com/example/project"))
-// ThisBuild / scmInfo := Some(
-//   ScmInfo(
-//     url("https://github.com/your-account/your-project"),
-//     "scm:git@github.com:your-account/your-project.git"
-//   )
-// )
-// ThisBuild / developers := List(
-//   Developer(
-//     id    = "Your identifier",
-//     name  = "Your Name",
-//     email = "your@email",
-//     url   = url("http://your.url")
-//   )
-// )
-// ThisBuild / pomIncludeRepository := { _ => false }
-// ThisBuild / publishTo := {
-//   val nexus = "https://oss.sonatype.org/"
-//   if (isSnapshot.value) Some("snapshots" at nexus + "content/repositories/snapshots")
-//   else Some("releases" at nexus + "service/local/staging/deploy/maven2")
-// }
-// ThisBuild / publishMavenStyle := true
+addCommandAlias("publishSbtSnapshot", "; set publishTo := Some(\"SbtSnapshot\" at \"https://repo.grdev.net/artifactory/enterprise-libs-sbt-snapshots-local\") ; publish")
+addCommandAlias("publishSbtRc", "; set publishTo := Some(\"SbtReleaseCandidate\" at \"https://repo.grdev.net/artifactory/enterprise-libs-sbt-release-candidates-local\") ; publish")

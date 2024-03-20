@@ -1,37 +1,43 @@
 package com.gradle
 
 import com.gradle.develocity.agent.sbt.DevelocityPlugin
-import com.gradle.develocity.agent.sbt.DevelocityPlugin.autoImport.DevelocityConfiguration
-import com.gradle.internal.{CustomBuildScanEnhancements, ServerConfigTemp, Overrides}
-import sbt.Keys._
-import sbt._
+import com.gradle.develocity.agent.sbt.DevelocityPlugin.autoImport.{DevelocityConfiguration, develocityConfiguration}
+import com.gradle.internal.{CustomBuildScanEnhancements, Overrides}
+import sbt.{AutoPlugin, Keys, Logger, Plugins, Setting, ScopeFilter, inAnyProject}
+import com.gradle.internal.Utils.Env
 
 object SbtCommonCustomUserDataPlugin extends AutoPlugin {
 
-  override def requires: Plugins = com.gradle.develocity.agent.sbt.DevelocityPlugin
+  override def requires: Plugins = DevelocityPlugin
 
   // This plugin is automatically enabled for projects which have DevelocityPlugin.
   override def trigger = allRequirements
 
   override lazy val buildSettings: Seq[Setting[_]] = Seq(
-    DevelocityPlugin.autoImport.develocityConfiguration := applyCCUD(
-      DevelocityPlugin.autoImport.develocityConfiguration.value,
-      crossScalaVersions.all(ScopeFilter(inAnyProject)).value.flatten.distinct.sorted)
+    DevelocityPlugin.autoImport.develocityConfiguration := {
+      val allScalaVersions = Keys.crossScalaVersions.all(ScopeFilter(inAnyProject)).value.flatten.distinct.sorted
+      applyCCUD(
+        Keys.sLog.value,
+        develocityConfiguration.value,
+        allScalaVersions
+      )
+    }
   )
 
-  private def applyCCUD(currentConfiguration: DevelocityConfiguration, scalaVersions: Seq[String]): DevelocityConfiguration = {
+  private def applyCCUD(
+      logger: Logger,
+      currentConfiguration: DevelocityConfiguration,
+      scalaVersions: Seq[String]
+  ): DevelocityConfiguration = {
+    implicit val env: Env = Env.SystemEnvironment
     val scan = currentConfiguration.buildScan
     val server = currentConfiguration.server
 
-    val serverConfigTemp = ServerConfigTemp.fromServer(server)
-    Overrides.applyTo(serverConfigTemp)
+    val newServer = new Overrides().transform(server)
+    val newBuildScan = new CustomBuildScanEnhancements(newServer, scalaVersions, logger).transform(scan)
 
-    val newBuildScan = new CustomBuildScanEnhancements(serverConfigTemp, scalaVersions.mkString(",")).withAdditionalData(scan)
-
-    currentConfiguration.withServer(server
-        .withUrl(serverConfigTemp.url())
-        .withAllowUntrusted(serverConfigTemp.allowUntrusted().getOrElse(server.allowUntrusted))
-      )
+    currentConfiguration
+      .withServer(newServer)
       .withBuildScan(newBuildScan)
   }
 }

@@ -25,6 +25,11 @@ Global / develocityConfiguration :=
 lazy val sbtCommonCustomUserDataPlugin = (project in file("."))
   .enablePlugins(SbtPlugin)
   .settings(
+    scalacOptions ++= Seq(
+      "-Xfatal-warnings",
+      "-Xlint:-unused",
+      "-Ywarn-unused:imports,privates,locals,implicits"
+    ),
     name := "sbt-common-custom-user-data",
     libraryDependencies ++= Seq(
       scalaTest % Test,

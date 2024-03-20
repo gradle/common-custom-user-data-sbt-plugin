@@ -13,12 +13,11 @@ Global / develocityConfiguration :=
       url = Some(url("https://ge.solutions-team.gradle.com"))
     ),
     buildScan = BuildScan(
-      tags = Set(),
       obfuscation = Obfuscation(
         ipAddresses = _.map(_ => "0.0.0.0")
       ),
       backgroundUpload = !sys.env.contains("CI"),
-      publishing = Publishing.onlyIf(_ => true),
+      publishing = Publishing.onlyIf { _.authenticated },
     )
   )
 
@@ -64,8 +63,18 @@ ThisBuild / publishTo := {
   if (isSnapshot.value) Some("ossrh" at "https://s01.oss.sonatype.org/content/repositories/snapshots")
   else Some("ossrh" at "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2")
 }
-credentials += Credentials("Artifactory", "https://repo.grdev.net/artifactory", sys.env.getOrElse("ARTIFACTORY_REPO_USER", ""), sys.env.getOrElse("ARTIFACTORY_REPO_PASSWORD", ""))
-credentials += Credentials("ossrh", "https://s01.oss.sonatype.org", sys.env.getOrElse("OSSRH_REPO_USER", ""), sys.env.getOrElse("OSSRH_REPO_PASSWORD", ""))
+credentials ++= {
+  for {
+    username <- sys.env.get("OSSRH_REPO_USER")
+    password <- sys.env.get("OSSRH_REPO_PASSWORD")
+  } yield Credentials("Sonatype Nexus Repository Manager", "s01.oss.sonatype.org", username, password)
+}
+credentials ++= {
+  for {
+    username <- sys.env.get("ARTIFACTORY_REPO_USER")
+    password <- sys.env.get("ARTIFACTORY_REPO_PASSWORD")
+  } yield Credentials("Artifactory Realm", "repo.grdev.net", username, password)
+}
 
-addCommandAlias("publishSbtSnapshot", "; set publishTo := Some(\"SbtSnapshot\" at \"https://repo.grdev.net/artifactory/enterprise-libs-sbt-snapshots-local\") ; publish") ++
+addCommandAlias("publishSbtSnapshot", "; set publishTo := Some(\"SbtSnapshot\" at \"https://repo.grdev.net/artifactory/enterprise-libs-sbt-snapshots-local\") ; publish")
 addCommandAlias("publishSbtRc", "; set publishTo := Some(\"SbtReleaseCandidate\" at \"https://repo.grdev.net/artifactory/enterprise-libs-sbt-release-candidates-local\") ; publish")

@@ -15,6 +15,7 @@ class CustomBuildScanEnhancements(serverConfig: ServerConfigTemp, scalaVersions:
   private val SYSTEM_PROP_IDEA_VENDOR_NAME = "idea.vendor.name"
   private val SYSTEM_PROP_IDEA_VERSION = "idea.version"
   private val SYSTEM_PROP_IDEA_MANAGED = "idea.managed"
+  private val SYSTEM_ENV_IDEA_DIR = "IDEA_INITIAL_DIRECTORY"
   private val SYSTEM_PROP_ECLIPSE_BUILD_ID = "eclipse.buildId"
   private val SYSTEM_PROP_IDEA_SYNC_ACTIVE = "idea.sync.active"
 
@@ -48,6 +49,9 @@ class CustomBuildScanEnhancements(serverConfig: ServerConfigTemp, scalaVersions:
         tagIde("IntelliJ IDEA", sysProperty(SYSTEM_PROP_IDEA_VERSION).get)
       }
       else if (sysProperty(SYSTEM_PROP_IDEA_MANAGED).isDefined) {
+        tagIde("IntelliJ IDEA", "")
+      }
+      else if (envVariable(SYSTEM_ENV_IDEA_DIR).isDefined) {
         tagIde("IntelliJ IDEA", "")
       }
       else if (sysProperty(SYSTEM_PROP_ECLIPSE_BUILD_ID).isDefined) {

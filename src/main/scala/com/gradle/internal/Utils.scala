@@ -4,45 +4,54 @@ import java.io.{FileInputStream, IOException, UnsupportedEncodingException}
 import java.net.{URI, URISyntaxException, URLEncoder}
 import java.nio.charset.StandardCharsets
 import java.util.Properties
+import scala.concurrent.{Await, Future, TimeoutException, blocking}
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent._
-import scala.sys.process._
+import scala.concurrent.duration.Duration
+import scala.sys.process.{ProcessLogger, stringToProcess}
 
 object Utils {
 
-  private val GIT_REPO_URI_REGEX = "^(?:(?:https://|git://)|(?:ssh)?.*?@)(.*?(?:github|gitlab).*?)(?:/|:[0-9]*?/|:)(.*?)(?:\\.git)?$".r
+  private val GIT_REPO_URI_REGEX =
+    "^(?:(?:https://|git://)|(?:ssh)?.*?@)(.*?(?:github|gitlab).*?)(?:/|:[0-9]*?/|:)(.*?)(?:\\.git)?$".r
 
-  private[gradle] def sysPropertyOrEnvVariable(sysPropertyName: String): Option[String] = sysPropertyOrEnvVariable(sysPropertyName, toEnvVarName(sysPropertyName))
+  abstract class Env {
+    protected def fromEnvironment(name: String): Option[String]
+    protected def fromProperties(name: String): Option[String]
 
-  private[gradle] def booleanSysPropertyOrEnvVariable(sysPropertyName: String): Option[Boolean] = booleanSysPropertyOrEnvVariable(sysPropertyName, toEnvVarName(sysPropertyName))
+    final def sysPropertyOrEnvVariable[T: FromString](name: String): Option[T] = sysPropertyOrEnvVariable(
+      Env.Key[T](name)
+    )
+    final def sysPropertyOrEnvVariable[T: FromString](key: Env.Key[T]): Option[T] =
+      sysProperty(key).orElse(envVariable(key))
 
-  private def toEnvVarName(sysPropertyName: String) = sysPropertyName.toUpperCase.replace('.', '_')
+    final def envVariable[T](key: Env.Key[T])(implicit parse: FromString[T]): Option[T] =
+      fromEnvironment(key.envVarName).flatMap(parse(_))
+    final def envVariable[T](name: String)(implicit parse: FromString[T]): Option[T] =
+      fromEnvironment(name).flatMap(parse(_))
 
-  private[gradle] def sysPropertyOrEnvVariable(sysPropertyName: String, envVarName: String): Option[String] = {
-    sysProperty(sysPropertyName).orElse(envVariable(envVarName))
+    final def sysProperty[T](key: Env.Key[T])(implicit parse: FromString[T]): Option[T] =
+      fromProperties(key.name).flatMap(parse(_))
+    final def sysProperty[T](name: String)(implicit parse: FromString[T]): Option[T] =
+      fromProperties(name).flatMap(parse(_))
+
   }
 
-  private[gradle] def booleanSysPropertyOrEnvVariable(sysPropertyName: String, envVarName: String): Option[Boolean] = {
-    booleanSysProperty(sysPropertyName).orElse(booleanEnvVariable(envVarName))
+  object Env {
+    case class Key[T](name: String) {
+      def envVarName: String = toEnvVarName(name)
+    }
+
+    object SystemEnvironment extends Env {
+      override def fromEnvironment(name: String): Option[String] = sys.env.get(name)
+      override def fromProperties(name: String): Option[String] = sys.props.get(name)
+    }
+
+    private def toEnvVarName(name: String): String = name.toUpperCase.replace('.', '_')
   }
-
-  private[gradle] def envVariable(name: String): Option[String] = sys.env.get(name)
-
-  private[gradle] def booleanEnvVariable(name: String): Option[Boolean] = envVariable(name).map(parseBoolean)
-
-  private[gradle] def sysProperty(name: String): Option[String] = sys.props.get(name)
-
-  private[gradle] def booleanSysProperty(name: String): Option[Boolean] = sysProperty(name).map(parseBoolean)
-
-  private[gradle] def isNotEmpty(value: Option[String]): Boolean = value.exists(_.nonEmpty)
 
   private[gradle] def appendIfMissing(string: String, suffix: Char): String = {
     if (string.nonEmpty && string.charAt(string.length - 1) == suffix) string
     else string + suffix
-  }
-
-  private def parseBoolean(string: String): Boolean = try string.toBoolean catch {
-    case scala.util.control.NonFatal(_) => false
   }
 
   private def trimAtEnd(str: String) = ('x' + str).trim.substring(1)
@@ -94,7 +103,7 @@ object Utils {
     val p = cmd.run() // start asynchronously
     val f = Future(blocking(p.exitValue())) // wrap in Future
     try {
-      Await.result(f, duration.Duration(10, "sec")) == 0
+      Await.result(f, Duration(10, "sec")) == 0
     } catch {
       case _: TimeoutException =>
         p.destroy()
@@ -119,27 +128,27 @@ object Utils {
     val p = cmd.run(logger) // start asynchronously
     val f = Future(blocking(p.exitValue())) // wrap in Future
     try {
-      if (Await.result(f, duration.Duration(10, "sec")) != 0) None
-      else Some(trimAtEnd(output.result()))
+      if (Await.result(f, Duration(10, "sec")) != 0) None
+      else Some(trimAtEnd(output.result())).filter(_.nonEmpty)
     } catch {
       case _: TimeoutException =>
         p.destroy()
         p.exitValue()
         None
-      case _@(_: IOException | _: InterruptedException) => None
+      case _ @(_: IOException | _: InterruptedException) => None
     }
   }
 
   private[gradle] def readPropertiesFile(name: String) = {
-      val input = new FileInputStream(name)
-      try {
-          val properties = new Properties
-          properties.load(input)
-          properties
-      } catch {
-          case e: IOException =>
-              throw new RuntimeException(e)
-      } finally if (input != null) input.close()
+    val input = new FileInputStream(name)
+    try {
+      val properties = new Properties
+      properties.load(input)
+      properties
+    } catch {
+      case e: IOException =>
+        throw new RuntimeException(e)
+    } finally if (input != null) input.close()
   }
 
   private[gradle] def getProperty(properties: Properties, propertyName: String): Option[String] =

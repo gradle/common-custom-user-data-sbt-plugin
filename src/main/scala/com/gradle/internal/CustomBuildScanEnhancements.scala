@@ -39,7 +39,11 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
     env: Env
 ) extends Transformer[BuildScan] {
 
+  private val SYSTEM_PROP_IDEA_VENDOR_NAME = Env.Key[String]("idea.vendor.name")
   private val SYSTEM_PROP_IDEA_VERSION = Env.Key[String]("idea.version")
+  private val SYSTEM_PROP_IDEA_MANAGED = Env.Key[String]("idea.managed")
+  private val SYSTEM_PROP_ECLIPSE_BUILD_ID = Env.Key[String]("eclipse.buildId")
+  private val ENV_VARIABLE_IDEA_DIR = Env.Key[String]("IDEA_INITIAL_DIRECTORY")
 
   override def transform(originBuildScan: BuildScan): BuildScan = {
     val ops = Seq(
@@ -62,15 +66,15 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
     else {
       val (ide, version) =
         env
-          .sysProperty[String]("idea.vendor.name")
+          .sysProperty(SYSTEM_PROP_IDEA_VENDOR_NAME)
           .filter(_ == "JetBrains")
           .map(_ => ("IntelliJ IDEA", env.sysProperty(SYSTEM_PROP_IDEA_VERSION)))
           // this case should be handled by the ideaVendorName condition but keeping it for compatibility reason
           // (ideaVendorName started with 2020.1)
           .orElse(env.sysProperty(SYSTEM_PROP_IDEA_VERSION).map(v => ("IntelliJ IDEA", Some(v))))
-          .orElse(env.sysProperty[String]("idea.managed").map(_ => ("IntelliJ IDEA", None)))
-          .orElse(env.envVariable[String]("IDEA_INITIAL_DIRECTORY").map(_ => ("IntelliJ IDEA", None)))
-          .orElse(env.sysProperty[String]("eclipse.buildId").map(v => ("Eclipse", Some(v))))
+          .orElse(env.sysProperty(SYSTEM_PROP_IDEA_MANAGED).map(_ => ("IntelliJ IDEA", None)))
+          .orElse(env.envVariable(ENV_VARIABLE_IDEA_DIR).map(_ => ("IntelliJ IDEA", None)))
+          .orElse(env.sysProperty(SYSTEM_PROP_ECLIPSE_BUILD_ID).map(v => ("Eclipse", Some(v))))
           .getOrElse(("Cmd Line", None))
 
       val ops = Seq(

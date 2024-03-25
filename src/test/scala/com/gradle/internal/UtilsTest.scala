@@ -16,10 +16,13 @@ class UtilsTest extends AnyFlatSpec
     }
   }
 
-  private lazy val webRepoUriArgumentsTable = Table((
-    "remote repository", "expected resolved repository"),
-    (for (host <- hosts; repo <- repos) yield (replaceHost(repo._1, host), replaceHost(repo._2, host))): _*
-  )
+  private lazy val webRepoUriArgumentsTable = {
+    val rows = for (host <- hosts; repo <- repos) yield (replaceHost(repo._1, host), replaceHost(repo._2, host))
+    Table(
+      ("remote repository", "expected resolved repository"),
+      rows: _*
+    )
+  }
 
   private def replaceHost(repo: String, host: String): String = String.format(repo, host)
 

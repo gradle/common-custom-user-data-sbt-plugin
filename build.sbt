@@ -21,8 +21,6 @@ Global / develocityConfiguration :=
     )
   )
 
-
-
 lazy val sbtCommonCustomUserDataPlugin = (project in file("."))
   .enablePlugins(SbtPlugin)
   .settings(

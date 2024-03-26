@@ -11,7 +11,7 @@
 
 
 [![Verify Build](https://github.com/gradle/common-custom-user-data-sbt-plugin/actions/workflows/build-verification.yml/badge.svg?branch=main)](https://github.com/gradle/common-custom-user-data-sbt-plugin/actions/workflows/build-verification.yml)
-[![Maven Central](https://img.shields.io/maven-central/v/com.gradle/sbt-common-custom-user-data)](https://search.maven.org/artifact/com.gradle/sbt-common-custom-user-data)
+[![Maven Central](https://img.shields.io/maven-central/v/com.gradle/sbt-develocity-common-custom-user-data)](https://search.maven.org/artifact/com.gradle/sbt-develocity-common-custom-user-data)
 [![Revved up by Develocity](https://img.shields.io/badge/Revved%20up%20by-Develocity-06A0CE?logo=Gradle&labelColor=02303A)](https://ge.solutions-team.gradle.com/scans)
 
 The sbt Develocity Common Custom User Data plugin enhances published build scans

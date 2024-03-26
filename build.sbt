@@ -80,6 +80,11 @@ credentials ++= {
     password <- sys.env.get("ARTIFACTORY_REPO_PASSWORD")
   } yield Credentials("Artifactory Realm", "repo.grdev.net", username, password)
 }
+credentials ++= {
+  for {
+    keyId <- sys.env.get("SIGN_KEY_ID")
+  } yield Credentials("GnuPG Key ID", "gpg", keyId, "ignored")
+}
 
 addCommandAlias("publishSbtSnapshot", "; set publishTo := Some(\"SbtSnapshot\" at \"https://repo.grdev.net/artifactory/enterprise-libs-sbt-snapshots-local\") ; publish")
 addCommandAlias("publishSbtRc", "; set publishTo := Some(\"SbtReleaseCandidate\" at \"https://repo.grdev.net/artifactory/enterprise-libs-sbt-release-candidates-local\") ; publish")

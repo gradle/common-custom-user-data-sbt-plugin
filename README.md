@@ -11,7 +11,7 @@
 
 
 [![Verify Build](https://github.com/gradle/common-custom-user-data-sbt-plugin/actions/workflows/build-verification.yml/badge.svg?branch=main)](https://github.com/gradle/common-custom-user-data-sbt-plugin/actions/workflows/build-verification.yml)
-[![Maven Central](https://img.shields.io/maven-central/v/com.gradle/sbt-common-custom-user-data)](https://search.maven.org/artifact/com.gradle/sbt-common-custom-user-data)
+[![Maven Central](https://img.shields.io/maven-central/v/com.gradle/sbt-develocity-common-custom-user-data)](https://search.maven.org/artifact/com.gradle/sbt-develocity-common-custom-user-data)
 [![Revved up by Develocity](https://img.shields.io/badge/Revved%20up%20by-Develocity-06A0CE?logo=Gradle&labelColor=02303A)](https://ge.solutions-team.gradle.com/scans)
 
 The sbt Develocity Common Custom User Data plugin enhances published build scans
@@ -23,7 +23,7 @@ You can leverage this plugin for your project in one of two ways:
 
 ## Applying the published plugin
 
-The sbt Develocity Common Custom User Data plugin is available in the [Maven Central](https://search.maven.org/artifact/com.gradle/sbt-common-custom-user-data). This plugin
+The sbt Develocity Common Custom User Data plugin is available in the [Maven Central](https://search.maven.org/artifact/com.gradle/sbt-develocity-common-custom-user-data). This plugin
 requires the [sbt Develocity plugin](https://search.maven.org/artifact/com.gradle/sbt-develocity) to also be applied in your build in order to have
 an effect.
 
@@ -91,7 +91,7 @@ Refer to the [Javadoc](https://docs.gradle.com/enterprise/sbt-plugin/api/com/gra
 
 ## Changelog
 
-Refer to the [release history](https://github.com/ribafish/sbt-common-custom-user-data-plugin/releases) to see detailed changes on the versions.
+Refer to the [release history](https://github.com/gradle/common-custom-user-data-sbt-plugin-plugin/releases) to see detailed changes on the versions.
 
 ## Learn more
 
@@ -106,7 +106,7 @@ The Gradle Enterprise Common Custom User Data Gradle plugin is open-source softw
 [dv-oss-projects]: https://github.com/gradle/develocity-oss-projects
 [ccud-gradle-plugin]: https://github.com/gradle/common-custom-user-data-gradle-plugin
 [ccud-maven-extension]: https://github.com/gradle/common-custom-user-data-maven-extension
-[ccud-sbt-plugin]: https://github.com/ribafish/sbt-common-custom-user-data-plugin/
+[ccud-sbt-plugin]: https://github.com/gradle/common-custom-user-data-sbt-plugin-plugin/
 [android-cache-fix-plugin]: https://github.com/gradle/android-cache-fix-gradle-plugin
 [develocity]: https://gradle.com/develocity
 [apache-license]: https://www.apache.org/licenses/LICENSE-2.0.html

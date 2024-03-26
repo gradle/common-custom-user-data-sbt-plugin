@@ -21,7 +21,6 @@ Global / develocityConfiguration :=
     )
   )
 
-
 lazy val sbtCommonCustomUserDataPlugin = (project in file("."))
   .enablePlugins(SbtPlugin)
   .settings(
@@ -30,7 +29,8 @@ lazy val sbtCommonCustomUserDataPlugin = (project in file("."))
       "-Xlint:-unused",
       "-Ywarn-unused:imports,privates,locals,implicits"
     ),
-    name := "sbt-common-custom-user-data",
+    name := "Develocity Common Custom User Data sbt Plugin",
+    normalizedName := "sbt-develocity-common-custom-user-data",
     libraryDependencies ++= Seq(
       scalaTest % Test,
     ),
@@ -45,11 +45,11 @@ lazy val sbtCommonCustomUserDataPlugin = (project in file("."))
 // Publishing setup
 ThisBuild / description := "A sbt plugin to capture common custom user data used for sbt Build Scans in Develocity"
 ThisBuild / licenses    := List("Apache-2.0" -> new URL("http://www.apache.org/licenses/LICENSE-2.0.txt"))
-ThisBuild / homepage    := Some(url("https://github.com/gradle/sbt-common-custom-user-data"))
+ThisBuild / homepage    := Some(url("https://github.com/gradle/common-custom-user-data-sbt-plugin"))
 ThisBuild / scmInfo := Some(
   ScmInfo(
-    url("https://github.com/ribafish/sbt-common-custom-user-data"),
-    "scm:git@github.com:ribafish/sbt-common-custom-user-data.git"
+    url("https://github.com/gradle/common-custom-user-data-sbt-plugin"),
+    "scm:git@github.com:gradle/common-custom-user-data-sbt-plugin.git"
   )
 )
 ThisBuild / developers := List(

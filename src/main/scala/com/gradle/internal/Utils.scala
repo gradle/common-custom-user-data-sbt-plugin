@@ -12,7 +12,7 @@ import scala.sys.process.{ProcessLogger, stringToProcess}
 object Utils {
 
   private val GIT_REPO_URI_REGEX =
-    "^(?:(?:https://|git://)|(?:ssh)?.*?@)(.*?(?:github|gitlab).*?)(?:/|:[0-9]*?/|:)(.*?)(?:\\.git)?$".r
+    "^(?:(?:https://|git://)(?:.+:.+@)?|(?:ssh)?.*?@)(.*?(?:github|gitlab).*?)(?:/|:[0-9]*?/|:)(.*?)(?:\\.git)?$".r
 
   abstract class Env {
     protected def fromEnvironment(name: String): Option[String]

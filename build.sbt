@@ -22,6 +22,7 @@ Global / develocityConfiguration :=
   )
 
 
+
 lazy val sbtCommonCustomUserDataPlugin = (project in file("."))
   .enablePlugins(SbtPlugin)
   .settings(
@@ -30,7 +31,8 @@ lazy val sbtCommonCustomUserDataPlugin = (project in file("."))
       "-Xlint:-unused",
       "-Ywarn-unused:imports,privates,locals,implicits"
     ),
-    name := "sbt-develocity-common-custom-user-data",
+    name := "Develocity Common Custom User Data sbt Plugin",
+    normalizedName := "sbt-develocity-common-custom-user-data",
     libraryDependencies ++= Seq(
       scalaTest % Test,
     ),

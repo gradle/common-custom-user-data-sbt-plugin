@@ -99,7 +99,7 @@ Visit our website to learn more about [Develocity][develocity].
 
 ## License
 
-The Gradle Enterprise Common Custom User Data Gradle plugin is open-source software released under the [Apache 2.0 License][apache-license].
+The sbt Develocity Common Custom User Data plugin is open-source software released under the [Apache 2.0 License][apache-license].
 
 [dv-build-config-samples]: https://github.com/gradle/develocity-build-config-samples
 [dv-build-validation-scripts]: https://github.com/gradle/gradle-enterprise-build-validation-scripts

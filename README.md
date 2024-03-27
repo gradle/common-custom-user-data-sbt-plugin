@@ -4,7 +4,7 @@
 > - _[Develocity Open Source Projects][dv-oss-projects]_
 > - _[Common Custom User Data Maven Extension][ccud-maven-extension]_
 > - _[Common Custom User Data Gradle Plugin][ccud-gradle-plugin]_
-> - _[Common Custom User Data SBT Plugin][ccud-sbt-plugin]_ (this repository)
+> - _[Common Custom User Data sbt Plugin][ccud-sbt-plugin]_ (this repository)
 > - _[Android Cache Fix Gradle Plugin][android-cache-fix-plugin]_
 
 # sbt Develocity Common Custom User Data plugin

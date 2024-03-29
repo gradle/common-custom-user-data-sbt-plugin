@@ -85,6 +85,7 @@ credentials ++= {
     keyId <- sys.env.get("SIGN_KEY_ID")
   } yield Credentials("GnuPG Key ID", "gpg", keyId, "ignored")
 }
+publishM2Configuration := publishM2Configuration.value.withOverwrite(true) // allows overwriting local .m2 publishings
 
 addCommandAlias("publishSbtSnapshot", "; set publishTo := Some(\"SbtSnapshot\" at \"https://repo.grdev.net/artifactory/enterprise-libs-sbt-snapshots-local\") ; publish")
 addCommandAlias("publishSbtRc", "; set publishTo := Some(\"SbtReleaseCandidate\" at \"https://repo.grdev.net/artifactory/enterprise-libs-sbt-release-candidates-local\") ; publish")

@@ -1,1 +1,0 @@
-- [NEW] Initial release with support for adding a set of tags, links and custom values that have proven to be useful for many projects building with Develocity, as well as overrides of server settings.

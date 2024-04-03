@@ -91,7 +91,7 @@ Refer to the [Javadoc](https://docs.gradle.com/enterprise/sbt-plugin/api/com/gra
 
 ## Changelog
 
-Refer to the [release history](https://github.com/gradle/common-custom-user-data-sbt-plugin-plugin/releases) to see detailed changes on the versions.
+Refer to the [release history](https://github.com/gradle/common-custom-user-data-sbt-plugin/releases) to see detailed changes on the versions.
 
 ## Learn more
 

@@ -1,0 +1,1 @@
+- [FIX] Empty "PR branch" custom value in some situations

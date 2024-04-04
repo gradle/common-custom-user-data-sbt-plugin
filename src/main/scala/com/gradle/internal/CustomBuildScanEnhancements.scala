@@ -199,7 +199,7 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
         ifDefined(buildUrl)(_.link("GitHub Actions build", _)),
         ifDefined(env.envVariable[String]("GITHUB_WORKFLOW"))(withCustomValueAndSearchLink(_, "CI workflow", _)),
         ifDefined(env.envVariable[String]("GITHUB_RUN_ID"))(withCustomValueAndSearchLink(_, "CI run", _)),
-        ifDefined(env.envVariable[String]("GITHUB_HEAD_REF"))(_.value("PR branch", _))
+        ifDefined(env.envVariable[String]("GITHUB_HEAD_REF").filter(_.nonEmpty))(_.value("PR branch", _))
       )
       Function.chain(ops)
     }

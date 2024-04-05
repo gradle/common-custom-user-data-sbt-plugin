@@ -75,6 +75,7 @@ sbt -Ddevelocity.url=https://ge.solutions-team.gradle.com/ run
 | develocity.server               | develocity.url                  | DEVELOCITY_URL                  |
 | develocity.allowUntrustedServer | develocity.allowUntrustedServer | DEVELOCITY_ALLOWUNTRUSTEDSERVER |
 
+</details>
 
 ## Developing a customized version of the plugin
 

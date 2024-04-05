@@ -7,7 +7,7 @@ ThisBuild / organizationName := "Gradle Inc."
 
 sbtPlugin := true
 
-Global / develocityConfiguration :=
+ThisBuild / develocityConfiguration :=
   DevelocityConfiguration(
     server = Server(
       url = Some(url("https://ge.solutions-team.gradle.com"))

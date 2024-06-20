@@ -17,4 +17,4 @@ jobs:
       - name: Build with sbt
         run: ./sbtx clean test
         env:
-          DEVELOCITY_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}
+          DEVELOCITY_ACCESS_KEY: ${{ secrets.DV_SOLUTIONS_ACCESS_KEY }}

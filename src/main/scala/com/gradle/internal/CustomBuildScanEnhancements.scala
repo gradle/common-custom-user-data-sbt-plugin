@@ -52,13 +52,13 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
       captureCiOrLocal,
       captureCiMetadata,
       captureGitMetadata,
-      (_: BuildScan).value("Scala versions", scalaVersions.mkString(","))
+      (_: BuildScan).withValue("Scala versions", scalaVersions.mkString(","))
     )
     Function.chain(ops)(originBuildScan)
   }
 
   private val captureOs = {
-    ifDefined(env.sysProperty[String]("os.name"))(_.tag(_))
+    ifDefined(env.sysProperty[String]("os.name"))(_.withTag(_))
   }
 
   private val captureIde: BuildScan => BuildScan =
@@ -78,14 +78,14 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
           .getOrElse(("Cmd Line", None))
 
       val ops = Seq(
-        (bs: BuildScan) => bs.tag(ide),
-        ifDefined(version)((bs, v) => bs.value(s"$ide version", v))
+        (bs: BuildScan) => bs.withTag(ide),
+        ifDefined(version)((bs, v) => bs.withValue(s"$ide version", v))
       )
       Function.chain(ops)
     }
 
   private val captureCiOrLocal: BuildScan => BuildScan =
-    _.tag(if (isCi) "CI" else "LOCAL")
+    _.withTag(if (isCi) "CI" else "LOCAL")
 
   private lazy val captureCiMetadata: BuildScan => BuildScan = {
     val ops = Seq(
@@ -110,12 +110,12 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
       val jobName = env.envVariable[String]("JOB_NAME")
       val buildNumber = env.envVariable[String]("BUILD_NUMBER")
       val ops = Seq(
-        (bs: BuildScan) => bs.value("CI provider", if (isJenkins) "Jenkins" else "Hudson"),
+        (bs: BuildScan) => bs.withValue("CI provider", if (isJenkins) "Jenkins" else "Hudson"),
         ifDefined(env.envVariable[URL]("BUILD_URL")) { case (bs, url) =>
           val label = if (isJenkins) "Jenkins build" else "Hudson build"
-          bs.link(label, url)
+          bs.withLink(label, url)
         },
-        ifDefined(buildNumber)(_.value("CI build number", _)),
+        ifDefined(buildNumber)(_.withValue("CI build number", _)),
         ifDefined(env.envVariable[String]("NODE_NAME"))(withCustomValueAndSearchLink(_, "CI node", _)),
         ifDefined(jobName)(withCustomValueAndSearchLink(_, "CI job", _)),
         ifDefined(env.envVariable[String]("STAGE_NAME"))(withCustomValueAndSearchLink(_, "CI stage", _)),
@@ -143,9 +143,9 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
       ifDefined(env.envVariable[String]("TEAMCITY_BUILD_PROPERTIES_FILE")) { (bs, teamCityBuildPropertiesFile) =>
         val buildProperties = readPropertiesFile(teamCityBuildPropertiesFile)
         val ops = Seq(
-          (bs: BuildScan) => bs.value("CI provider", "TeamCity"),
-          ifDefined(teamCityBuildUrl(buildProperties))(_.link("TeamCity build", _)),
-          ifDefined(getProperty(buildProperties, "build.number"))(_.value("CI build number", _)),
+          (bs: BuildScan) => bs.withValue("CI provider", "TeamCity"),
+          ifDefined(teamCityBuildUrl(buildProperties))(_.withLink("TeamCity build", _)),
+          ifDefined(getProperty(buildProperties, "build.number"))(_.withValue("CI build number", _)),
           ifDefined(getProperty(buildProperties, "teamcity.buildType.id"))(
             withCustomValueAndSearchLink(_, "CI build config", _)
           ),
@@ -160,9 +160,9 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
     if (!isCircleCI) identity
     else {
       val ops = Seq(
-        (bs: BuildScan) => bs.value("CI provider", "CircleCI"),
-        ifDefined(env.envVariable[URL]("CIRCLE_BUILD_URL"))(_.link("CircleCI build", _)),
-        ifDefined(env.envVariable[String]("CIRCLE_BUILD_NUM"))(_.value("CI build number", _)),
+        (bs: BuildScan) => bs.withValue("CI provider", "CircleCI"),
+        ifDefined(env.envVariable[URL]("CIRCLE_BUILD_URL"))(_.withLink("CircleCI build", _)),
+        ifDefined(env.envVariable[String]("CIRCLE_BUILD_NUM"))(_.withValue("CI build number", _)),
         ifDefined(env.envVariable[String]("CIRCLE_JOB"))(withCustomValueAndSearchLink(_, "CI job", _)),
         ifDefined(env.envVariable[String]("CIRCLE_WORKFLOW_ID"))(withCustomValueAndSearchLink(_, "CI workflow", _))
       )
@@ -174,9 +174,9 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
     if (!isBamboo) identity
     else {
       val ops = Seq(
-        (bs: BuildScan) => bs.value("CI provider", "Bamboo"),
-        ifDefined(env.envVariable[URL]("bamboo_resultsUrl"))(_.link("Bamboo build", _)),
-        ifDefined(env.envVariable[String]("bamboo_buildNumber"))(_.value("CI build number", _)),
+        (bs: BuildScan) => bs.withValue("CI provider", "Bamboo"),
+        ifDefined(env.envVariable[URL]("bamboo_resultsUrl"))(_.withLink("Bamboo build", _)),
+        ifDefined(env.envVariable[String]("bamboo_buildNumber"))(_.withValue("CI build number", _)),
         ifDefined(env.envVariable[String]("bamboo_planName"))(withCustomValueAndSearchLink(_, "CI plan", _)),
         ifDefined(env.envVariable[String]("bamboo_buildPlanName"))(withCustomValueAndSearchLink(_, "CI build plan", _)),
         ifDefined(env.envVariable[String]("bamboo_agentId"))(withCustomValueAndSearchLink(_, "CI agent", _))
@@ -195,11 +195,11 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
       } yield sbt.url(s"$url/$repository/actions/runs/$runId")
 
       val ops = Seq(
-        (bs: BuildScan) => bs.value("CI provider", "GitHub Actions"),
-        ifDefined(buildUrl)(_.link("GitHub Actions build", _)),
+        (bs: BuildScan) => bs.withValue("CI provider", "GitHub Actions"),
+        ifDefined(buildUrl)(_.withLink("GitHub Actions build", _)),
         ifDefined(env.envVariable[String]("GITHUB_WORKFLOW"))(withCustomValueAndSearchLink(_, "CI workflow", _)),
         ifDefined(env.envVariable[String]("GITHUB_RUN_ID"))(withCustomValueAndSearchLink(_, "CI run", _)),
-        ifDefined(env.envVariable[String]("GITHUB_HEAD_REF").filter(_.nonEmpty))(_.value("PR branch", _))
+        ifDefined(env.envVariable[String]("GITHUB_HEAD_REF").filter(_.nonEmpty))(_.withValue("PR branch", _))
       )
       Function.chain(ops)
     }
@@ -209,9 +209,9 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
     if (!isGitLab) identity
     else {
       val ops = Seq(
-        (bs: BuildScan) => bs.value("CI provider", "GitLab"),
-        ifDefined(env.envVariable[URL]("CI_JOB_URL"))(_.link("GitLab build", _)),
-        ifDefined(env.envVariable[URL]("CI_PIPELINE_URL"))(_.link("GitLab pipeline", _)),
+        (bs: BuildScan) => bs.withValue("CI provider", "GitLab"),
+        ifDefined(env.envVariable[URL]("CI_JOB_URL"))(_.withLink("GitLab build", _)),
+        ifDefined(env.envVariable[URL]("CI_PIPELINE_URL"))(_.withLink("GitLab pipeline", _)),
         ifDefined(env.envVariable[String]("CI_JOB_NAME"))(withCustomValueAndSearchLink(_, "CI job", _)),
         ifDefined(env.envVariable[String]("CI_JOB_STAGE"))(withCustomValueAndSearchLink(_, "CI stage", _))
       )
@@ -223,11 +223,11 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
     if (!isTravis) identity
     else {
       val ops = Seq(
-        (bs: BuildScan) => bs.value("CI provider", "Travis"),
-        ifDefined(env.envVariable[URL]("TRAVIS_BUILD_WEB_URL"))(_.link("Travis build", _)),
-        ifDefined(env.envVariable[String]("TRAVIS_BUILD_NUMBER"))(_.value("CI build number", _)),
+        (bs: BuildScan) => bs.withValue("CI provider", "Travis"),
+        ifDefined(env.envVariable[URL]("TRAVIS_BUILD_WEB_URL"))(_.withLink("Travis build", _)),
+        ifDefined(env.envVariable[String]("TRAVIS_BUILD_NUMBER"))(_.withValue("CI build number", _)),
         ifDefined(env.envVariable[String]("TRAVIS_JOB_NAME"))(withCustomValueAndSearchLink(_, "CI job", _)),
-        ifDefined(env.envVariable[String]("TRAVIS_EVENT_TYPE"))(_.tag(_))
+        ifDefined(env.envVariable[String]("TRAVIS_EVENT_TYPE"))(_.withTag(_))
       )
       Function.chain(ops)
     }
@@ -237,9 +237,9 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
     if (!isBitrise) identity
     else {
       val ops = Seq(
-        (bs: BuildScan) => bs.value("CI provider", "Bitrise"),
-        ifDefined(env.envVariable[URL]("BITRISE_BUILD_URL"))(_.link("Bitrise build", _)),
-        ifDefined(env.envVariable[String]("BITRISE_BUILD_NUMBER"))(_.value("CI build number", _))
+        (bs: BuildScan) => bs.withValue("CI provider", "Bitrise"),
+        ifDefined(env.envVariable[URL]("BITRISE_BUILD_URL"))(_.withLink("Bitrise build", _)),
+        ifDefined(env.envVariable[String]("BITRISE_BUILD_NUMBER"))(_.withValue("CI build number", _))
       )
       Function.chain(ops)
     }
@@ -265,8 +265,8 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
       val buildLink = goCdBuild.map(("GoCD build", _)).orElse(goServerUrl.map(("GoCD", _)))
 
       val ops = Seq(
-        (bs: BuildScan) => bs.value("CI provider", "GoCD"),
-        ifDefined(buildLink) { case (bs, (label, url)) => bs.link(label, url) },
+        (bs: BuildScan) => bs.withValue("CI provider", "GoCD"),
+        ifDefined(buildLink) { case (bs, (label, url)) => bs.withLink(label, url) },
         ifDefined(pipelineName)(withCustomValueAndSearchLink(_, "CI pipeline", _)),
         ifDefined(jobName)(withCustomValueAndSearchLink(_, "CI job", _)),
         ifDefined(stageName)(withCustomValueAndSearchLink(_, "CI stage", _))
@@ -288,9 +288,9 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
       val buildLink = buildUrl.map(("Azure Pipelines build", _)).orElse(azureServerUrl.map(("Azure Pipelines", _)))
 
       val ops = Seq(
-        (bs: BuildScan) => bs.value("CI provider", "Azure Pipelines"),
-        ifDefined(buildLink) { case (bs, (label, url)) => bs.link(label, url) },
-        ifDefined(buildId)(_.value("CI build number", _))
+        (bs: BuildScan) => bs.withValue("CI provider", "Azure Pipelines"),
+        ifDefined(buildLink) { case (bs, (label, url)) => bs.withLink(label, url) },
+        ifDefined(buildId)(_.withValue("CI build number", _))
       )
       Function.chain(ops)
     }
@@ -306,11 +306,11 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
       } yield sbt.url(s"$webRepoUri/pull/$prNumber")
 
       val ops = Seq(
-        (bs: BuildScan) => bs.value("CI provider", "Buildkite"),
-        ifDefined(env.envVariable[URL]("BUILDKITE_BUILD_URL"))(_.link("Buildkite build", _)),
+        (bs: BuildScan) => bs.withValue("CI provider", "Buildkite"),
+        ifDefined(env.envVariable[URL]("BUILDKITE_BUILD_URL"))(_.withLink("Buildkite build", _)),
         ifDefined(env.envVariable[String]("BUILDKITE_COMMAND"))(withCustomValueAndSearchLink(_, "CI command", _)),
-        ifDefined(env.envVariable[String]("BUILDKITE_BUILD_ID"))(_.value("CI build ID", _)),
-        ifDefined(prSource)(_.link("PR source", _))
+        ifDefined(env.envVariable[String]("BUILDKITE_BUILD_ID"))(_.withValue("CI build ID", _)),
+        ifDefined(prSource)(_.withLink("PR source", _))
       )
       Function.chain(ops)
     }
@@ -341,12 +341,12 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
       }
 
       val ops = Seq(
-        ifDefined(gitRepo)((bs, repo) => bs.value("Git repository", redactUserInfo(repo))),
-        ifDefined(gitCommitId)(_.value("Git commit id", _)),
+        ifDefined(gitRepo)((bs, repo) => bs.withValue("Git repository", redactUserInfo(repo))),
+        ifDefined(gitCommitId)(_.withValue("Git commit id", _)),
         ifDefined(gitCommitShortId)(withCustomValueAndSearchLink(_, "Git commit id", "Git commit id short", _)),
-        ifDefined(gitBranchName) { (bs, branch) => bs.tag(branch).value("Git branch", branch) },
-        ifDefined(gitStatus)(_.tag("Dirty").value("Git status", _)),
-        ifDefined(githubRepositoryLink.orElse(webRepo)) { case (bs, (label, uri)) => bs.link(label, uri) }
+        ifDefined(gitBranchName) { (bs, branch) => bs.withTag(branch).withValue("Git branch", branch) },
+        ifDefined(gitStatus)(_.withTag("Dirty").withValue("Git status", _)),
+        ifDefined(githubRepositoryLink.orElse(webRepo)) { case (bs, (label, uri)) => bs.withLink(label, uri) }
       )
       Function.chain(ops)
     }
@@ -383,7 +383,7 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
   }
 
   private def withCustomValueAndSearchLink(buildScan: BuildScan, name: String, value: String) =
-    withSearchLink(buildScan.value(name, value), name, name, value)
+    withSearchLink(buildScan.withValue(name, value), name, name, value)
 
   private def withCustomValueAndSearchLink(
       buildScan: BuildScan,
@@ -391,7 +391,7 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
       name: String,
       value: String
   ): BuildScan =
-    withSearchLink(buildScan.value(name, value), linkLabel, name, value)
+    withSearchLink(buildScan.withValue(name, value), linkLabel, name, value)
 
   private def withSearchLink(buildScan: BuildScan, label: String, name: String, value: String): BuildScan = {
     serverConfig.url match {
@@ -404,7 +404,7 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
         val searchParams = params.replaceFirst("&", "")
         val buildScanSelection = urlEncode("{SCAN_ID}").map(s => "#selection.buildScanB=" + s).getOrElse("")
         val url = appendIfMissing(server.toString, '/') + "scans?" + searchParams + buildScanSelection
-        buildScan.link(s"$label build scans", sbt.url(url))
+        buildScan.withLink(s"$label build scans", sbt.url(url))
     }
   }
 

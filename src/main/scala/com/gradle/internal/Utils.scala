@@ -1,7 +1,7 @@
 package com.gradle.internal
 
 import java.io.{FileInputStream, IOException, UnsupportedEncodingException}
-import java.net.{URI, URISyntaxException, URLEncoder}
+import java.net.{URI, URLEncoder}
 import java.nio.charset.StandardCharsets
 import java.util.Properties
 import scala.concurrent.{Await, Future, TimeoutException, blocking}
@@ -49,11 +49,7 @@ object Utils {
   }
 
   private def toUri(scheme: String, host: String, path: String): Option[URI] = {
-    try {
-      Some(new URI(scheme, host, path, null))
-    } catch {
-      case _: URISyntaxException => None
-    }
+    Try(new URI(scheme, host, path, null)).toOption
   }
 
   private[gradle] def redactUserInfo(url: String): String = {

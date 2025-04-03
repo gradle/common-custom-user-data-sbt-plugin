@@ -8,6 +8,7 @@ import scala.concurrent.{Await, Future, TimeoutException, blocking}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 import scala.sys.process.{ProcessLogger, stringToProcess}
+import scala.util.Try
 
 object Utils {
 
@@ -55,12 +56,11 @@ object Utils {
     }
   }
 
-  private[gradle] def redactUserInfo(url: String) = try {
-    val userInfo = new URI(url).getUserInfo
-    if (userInfo == null) url
-    else url.replace(userInfo + '@', "******@")
-  } catch {
-    case _: URISyntaxException => url
+  private[gradle] def redactUserInfo(url: String): String = {
+    Try(new URI(url)).toOption.flatMap(uri => Option(uri.getUserInfo)) match {
+      case None       => url
+      case Some(info) => url.replace(info + '@', "******@")
+    }
   }
 
   private[gradle] def execAndCheckSuccess(args: String*): Boolean = {

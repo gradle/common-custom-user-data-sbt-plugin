@@ -1,7 +1,5 @@
 package com.gradle.internal
 
-import com.gradle.internal.Utils.Env
-
 object CiUtils {
 
   private[gradle] def isCi(implicit env: Env): Boolean =

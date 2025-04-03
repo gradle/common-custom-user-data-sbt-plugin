@@ -18,7 +18,6 @@ import com.gradle.internal.CiUtils.{
   isTravis
 }
 import com.gradle.internal.Utils.{
-  Env,
   appendIfMissing,
   execAndCheckSuccess,
   execAndGetStdOut,

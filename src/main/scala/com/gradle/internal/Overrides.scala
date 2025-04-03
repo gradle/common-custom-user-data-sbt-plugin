@@ -1,7 +1,6 @@
 package com.gradle.internal
 
 import com.gradle.develocity.agent.sbt.api.configuration.Server
-import com.gradle.internal.Utils.Env
 import java.net.URL
 
 class Overrides(implicit env: Env) extends Transformer[Server] {

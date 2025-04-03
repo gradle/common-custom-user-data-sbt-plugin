@@ -1,6 +1,6 @@
 package com.gradle.internal
 
-import java.io.{FileInputStream, IOException, UnsupportedEncodingException}
+import java.io.{File, IOException, UnsupportedEncodingException}
 import java.net.{URI, URLEncoder}
 import java.nio.charset.StandardCharsets
 import java.util.Properties
@@ -9,6 +9,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 import scala.sys.process.{ProcessLogger, stringToProcess}
 import scala.util.Try
+import sbt.io.Using
 
 object Utils {
 
@@ -100,16 +101,10 @@ object Utils {
     }
   }
 
-  private[gradle] def readPropertiesFile(name: String) = {
-    val input = new FileInputStream(name)
-    try {
-      val properties = new Properties
-      properties.load(input)
-      properties
-    } catch {
-      case e: IOException =>
-        throw new RuntimeException(e)
-    } finally if (input != null) input.close()
+  private[gradle] def readPropertiesFile(filename: String): Properties = {
+    val properties = new Properties
+    Using.fileInputStream(new File(filename))(properties.load)
+    properties
   }
 
   private[gradle] def getProperty(properties: Properties, propertyName: String): Option[String] =

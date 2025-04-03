@@ -1,15 +1,16 @@
 package com.gradle.internal
 
-import java.io.{File, IOException, UnsupportedEncodingException}
+import java.io.{File, UnsupportedEncodingException}
 import java.net.{URI, URLEncoder}
 import java.nio.charset.StandardCharsets
 import java.util.Properties
-import scala.concurrent.{Await, Future, TimeoutException, blocking}
+import scala.concurrent.{Await, Future, blocking}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
-import scala.sys.process.{ProcessLogger, stringToProcess}
+import scala.sys.process.{BasicIO, ProcessIO, ProcessLogger, stringToProcess}
 import scala.util.Try
 import sbt.io.Using
+import java.util.concurrent.TimeUnit
 
 object Utils {
 
@@ -60,44 +61,35 @@ object Utils {
     }
   }
 
-  private[gradle] def execAndCheckSuccess(args: String*): Boolean = {
-    val cmd = args.mkString(" ")
-    val p = cmd.run() // start asynchronously
-    val f = Future(blocking(p.exitValue())) // wrap in Future
-    try {
-      Await.result(f, Duration(10, "sec")) == 0
-    } catch {
-      case _: TimeoutException =>
-        p.destroy()
-        p.exitValue()
-        false
+  private[gradle] def exec(cmd: String*)(
+      timeout: Duration = Duration(10, TimeUnit.SECONDS),
+      io: ProcessIO = BasicIO.standard(connectInput = false)
+  ): Int = {
+    val process = cmd.mkString(" ").run()
+    val future = Future(blocking(process.exitValue()))
+    try Await.result(future, timeout)
+    catch {
+      case _: java.util.concurrent.TimeoutException =>
+        process.destroy()
+        process.exitValue()
     }
   }
 
+  private[gradle] def execAndCheckSuccess(args: String*): Boolean = {
+    exec(args: _*)() == 0
+  }
+
   private[gradle] def execAndGetStdOut(args: String*): Option[String] = {
-    val cmd = args.mkString(" ")
-
-    val output = StringBuilder.newBuilder
+    val output = new StringBuffer()
     val logger = new ProcessLogger {
-      def out(s: => String): Unit = {
-        output.append(s).append("\n")
-      }
-
-      def err(s: => String): Unit = {} // ignore
-
-      def buffer[T](f: => T): T = f
+      override def buffer[T](f: => T): T = f
+      override def err(s: => String): Unit = () // ignored
+      override def out(s: => String): Unit = output.append(s).append(System.lineSeparator())
     }
-    val p = cmd.run(logger) // start asynchronously
-    val f = Future(blocking(p.exitValue())) // wrap in Future
-    try {
-      if (Await.result(f, Duration(10, "sec")) != 0) None
-      else Some(trimAtEnd(output.result())).filter(_.nonEmpty)
-    } catch {
-      case _: TimeoutException =>
-        p.destroy()
-        p.exitValue()
-        None
-      case _ @(_: IOException | _: InterruptedException) => None
+    val io = BasicIO(false, logger)
+    exec(args: _*)(io = io) match {
+      case 0 => Some(trimAtEnd(output.toString)).filter(_.nonEmpty)
+      case _ => None
     }
   }
 

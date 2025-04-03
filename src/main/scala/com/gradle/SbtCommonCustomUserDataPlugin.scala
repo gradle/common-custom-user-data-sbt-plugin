@@ -14,7 +14,7 @@ object SbtCommonCustomUserDataPlugin extends AutoPlugin {
   override def trigger = allRequirements
 
   override lazy val buildSettings: Seq[Setting[_]] = Seq(
-    DevelocityPlugin.autoImport.develocityConfiguration := {
+    develocityConfiguration := {
       val allScalaVersions = Keys.crossScalaVersions.all(ScopeFilter(inAnyProject)).value.flatten.distinct.sorted
       applyCCUD(
         Keys.sLog.value,

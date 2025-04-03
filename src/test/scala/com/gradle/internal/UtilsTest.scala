@@ -6,13 +6,11 @@ import org.scalatest.prop.TableDrivenPropertyChecks
 
 import java.net.URI
 
-class UtilsTest extends AnyFlatSpec
-  with Matchers
-  with TableDrivenPropertyChecks {
+class UtilsTest extends AnyFlatSpec with Matchers with TableDrivenPropertyChecks {
 
   "Utils" should "construct a repo URI from a git URL" in {
     forEvery(webRepoUriArgumentsTable) { (repositoryUri, expectedWebRepoUri) =>
-      assertResult(Some(URI.create(expectedWebRepoUri))) (Utils.toWebRepoUri(repositoryUri))
+      assertResult(Some(URI.create(expectedWebRepoUri)))(Utils.toWebRepoUri(repositoryUri))
     }
   }
 
@@ -43,7 +41,7 @@ class UtilsTest extends AnyFlatSpec
     ("git@%s.com/acme-inc/my-project.git", "https://%s.com/acme-inc/my-project"),
     // Enterprise repos
     ("https://%s.acme.com/acme-inc/my-project", "https://%s.acme.com/acme-inc/my-project"),
-    ("git@%s.acme.com/acme-inc/my-project.git", "https://%s.acme.com/acme-inc/my-project"),
+    ("git@%s.acme.com/acme-inc/my-project.git", "https://%s.acme.com/acme-inc/my-project")
   )
 
 }

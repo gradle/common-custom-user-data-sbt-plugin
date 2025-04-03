@@ -364,8 +364,7 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
         env.envVariable[String]("BRANCH_NAME").orElse {
           env.envVariable[String]("GIT_BRANCH").flatMap(getLocalBranch)
         }
-      }
-      else if (isGitLab) env.envVariable[String]("CI_COMMIT_REF_NAME")
+      } else if (isGitLab) env.envVariable[String]("CI_COMMIT_REF_NAME")
       else if (isAzurePipelines) env.envVariable[String]("BUILD_SOURCEBRANCH")
       else if (isBuildkite) env.envVariable[String]("BUILDKITE_BRANCH")
       else if (isGitHubActions) env.envVariable[String]("GITHUB_REF_NAME")
@@ -377,7 +376,8 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
     // This finds the longest matching remote name. This is because, for example, a local git clone could have
     // two remotes named `origin` and `origin/two`. In this scenario, we would want a remote branch of
     // `origin/two/main` to match to the `origin/two` remote, not to `origin`
-    Utils.execAndGetStdOut("git", "remote")
+    Utils
+      .execAndGetStdOut("git", "remote")
       .map(remotes => remotes.split("\\R").filter((remote) => remoteBranch.startsWith(remote + "/")).maxBy(_.length))
       .map(remote => remoteBranch.replaceFirst("^" + remote + "/", ""))
   }

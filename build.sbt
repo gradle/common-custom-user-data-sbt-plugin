@@ -1,9 +1,10 @@
 import Dependencies.*
 
 ThisBuild / scalaVersion := "2.12.15"
-ThisBuild / version := "1.1"
 ThisBuild / organization := "com.gradle"
 ThisBuild / organizationName := "Gradle Inc."
+
+ThisBuild / dynverSonatypeSnapshots := true
 
 sbtPlugin := true
 

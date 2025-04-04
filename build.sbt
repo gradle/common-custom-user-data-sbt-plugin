@@ -40,7 +40,12 @@ lazy val sbtCommonCustomUserDataPlugin = (project in file("."))
         case "2.12" => "1.6.0" // set minimum sbt version - best to keep it in sync with the GE plugin
       }
     },
-    addSbtPlugin(develocityPlugin)
+    addSbtPlugin(develocityPlugin),
+    scriptedLaunchOpts ++= Seq(
+      "-Xmx1024M",
+      "-Dplugin.version=" + version.value,
+      "-Dscan=false", // Don't publish build scans from scripted builds
+    )
   )
 
 // Publishing setup

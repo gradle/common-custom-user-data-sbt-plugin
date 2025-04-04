@@ -30,14 +30,13 @@ object SbtCommonCustomUserDataPlugin extends AutoPlugin {
       scalaVersions: Seq[String]
   ): DevelocityConfiguration = {
     implicit val env: Env = Env.SystemEnvironment
-    val scan = currentConfiguration.buildScan
-    val server = currentConfiguration.server
+    val transformers = Seq(
+      Overrides.lift(_.server, _.withServer(_)),
+      CustomBuildScanEnhancements.transformer(scalaVersions, logger)
+    )
 
-    val newServer = new Overrides().transform(server)
-    val newBuildScan = new CustomBuildScanEnhancements(newServer, scalaVersions, logger).transform(scan)
-
-    currentConfiguration
-      .withServer(newServer)
-      .withBuildScan(newBuildScan)
+    transformers
+      .reduce(_ andThen _)
+      .transform(currentConfiguration)
   }
 }

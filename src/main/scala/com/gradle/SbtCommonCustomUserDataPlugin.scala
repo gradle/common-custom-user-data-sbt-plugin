@@ -4,7 +4,7 @@ import com.gradle.develocity.agent.sbt.DevelocityPlugin
 import com.gradle.develocity.agent.sbt.DevelocityPlugin.autoImport.{DevelocityConfiguration, develocityConfiguration}
 import com.gradle.internal.{CustomBuildScanEnhancements, Overrides}
 import sbt.{AutoPlugin, Keys, Logger, Plugins, Setting, ScopeFilter, inAnyProject}
-import com.gradle.internal.Utils.Env
+import com.gradle.internal.Env
 
 object SbtCommonCustomUserDataPlugin extends AutoPlugin {
 
@@ -14,7 +14,7 @@ object SbtCommonCustomUserDataPlugin extends AutoPlugin {
   override def trigger = allRequirements
 
   override lazy val buildSettings: Seq[Setting[_]] = Seq(
-    DevelocityPlugin.autoImport.develocityConfiguration := {
+    develocityConfiguration := {
       val allScalaVersions = Keys.crossScalaVersions.all(ScopeFilter(inAnyProject)).value.flatten.distinct.sorted
       applyCCUD(
         Keys.sLog.value,
@@ -30,14 +30,13 @@ object SbtCommonCustomUserDataPlugin extends AutoPlugin {
       scalaVersions: Seq[String]
   ): DevelocityConfiguration = {
     implicit val env: Env = Env.SystemEnvironment
-    val scan = currentConfiguration.buildScan
-    val server = currentConfiguration.server
+    val transformers = Seq(
+      Overrides.lift(_.server, _.withServer(_)),
+      CustomBuildScanEnhancements.transformer(scalaVersions, logger)
+    )
 
-    val newServer = new Overrides().transform(server)
-    val newBuildScan = new CustomBuildScanEnhancements(newServer, scalaVersions, logger).transform(scan)
-
-    currentConfiguration
-      .withServer(newServer)
-      .withBuildScan(newBuildScan)
+    transformers
+      .reduce(_ andThen _)
+      .transform(currentConfiguration)
   }
 }

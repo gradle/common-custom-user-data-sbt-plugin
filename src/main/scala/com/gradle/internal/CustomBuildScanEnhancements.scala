@@ -1,6 +1,7 @@
 package com.gradle.internal
 
 import com.gradle.develocity.agent.sbt.api.configuration.BuildScan
+import com.gradle.develocity.agent.sbt.api.configuration.DevelocityConfiguration
 import com.gradle.develocity.agent.sbt.api.configuration.Server
 import com.gradle.internal.CiUtils.{
   isAzurePipelines,
@@ -18,7 +19,6 @@ import com.gradle.internal.CiUtils.{
   isTravis
 }
 import com.gradle.internal.Utils.{
-  Env,
   appendIfMissing,
   execAndCheckSuccess,
   execAndGetStdOut,
@@ -32,12 +32,23 @@ import java.util.Properties
 import java.net.URL
 import sbt.Logger
 
+object CustomBuildScanEnhancements {
+  def transformer(scalaVersions: Seq[String], logger: Logger): Transformer[DevelocityConfiguration] = {
+    new Transformer[DevelocityConfiguration] {
+      override def transform(in: DevelocityConfiguration)(implicit env: Env): DevelocityConfiguration = {
+        val transformer = new CustomBuildScanEnhancements(in.server, scalaVersions, logger)
+        val newBuildScan = transformer.transform(in.buildScan)
+        in.withBuildScan(newBuildScan)
+      }
+    }
+  }
+}
+
 /**
  * Adds a standard set of useful tags, links and custom values to all build scans published.
  */
-class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[String], logger: Logger)(implicit
-    env: Env
-) extends Transformer[BuildScan] {
+private class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[String], logger: Logger)
+    extends Transformer[BuildScan] {
 
   private val SYSTEM_PROP_IDEA_VENDOR_NAME = Env.Key[String]("idea.vendor.name")
   private val SYSTEM_PROP_IDEA_VERSION = Env.Key[String]("idea.version")
@@ -45,7 +56,7 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
   private val SYSTEM_PROP_ECLIPSE_BUILD_ID = Env.Key[String]("eclipse.buildId")
   private val ENV_VARIABLE_IDEA_DIR = Env.Key[String]("IDEA_INITIAL_DIRECTORY")
 
-  override def transform(originBuildScan: BuildScan): BuildScan = {
+  override def transform(originBuildScan: BuildScan)(implicit env: Env): BuildScan = {
     val ops = Seq(
       captureOs,
       captureIde,
@@ -57,11 +68,11 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
     Function.chain(ops)(originBuildScan)
   }
 
-  private val captureOs = {
+  private def captureOs(implicit env: Env): BuildScan => BuildScan = {
     ifDefined(env.sysProperty[String]("os.name"))(_.withTag(_))
   }
 
-  private val captureIde: BuildScan => BuildScan =
+  private def captureIde(implicit env: Env): BuildScan => BuildScan =
     if (isCi) identity
     else {
       val (ide, version) =
@@ -84,10 +95,10 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
       Function.chain(ops)
     }
 
-  private val captureCiOrLocal: BuildScan => BuildScan =
+  private def captureCiOrLocal(implicit env: Env): BuildScan => BuildScan =
     _.withTag(if (isCi) "CI" else "LOCAL")
 
-  private lazy val captureCiMetadata: BuildScan => BuildScan = {
+  private def captureCiMetadata(implicit env: Env): BuildScan => BuildScan = {
     val ops = Seq(
       captureJenkinsOrHudson,
       captureTeamCity,
@@ -104,7 +115,7 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
     Function.chain(ops)
   }
 
-  private val captureJenkinsOrHudson: BuildScan => BuildScan = {
+  private def captureJenkinsOrHudson(implicit env: Env): BuildScan => BuildScan = {
     if (!isJenkins && !isHudson) identity
     else {
       val jobName = env.envVariable[String]("JOB_NAME")
@@ -128,7 +139,7 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
     }
   }
 
-  private val captureTeamCity: BuildScan => BuildScan = {
+  private def captureTeamCity(implicit env: Env): BuildScan => BuildScan = {
     if (!isTeamCity) identity
     else {
       def teamCityBuildUrl(properties: Properties) = for {
@@ -156,7 +167,7 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
     }
   }
 
-  private val captureCircleCi: BuildScan => BuildScan = {
+  private def captureCircleCi(implicit env: Env): BuildScan => BuildScan = {
     if (!isCircleCI) identity
     else {
       val ops = Seq(
@@ -170,7 +181,7 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
     }
   }
 
-  private val captureBamboo: BuildScan => BuildScan = {
+  private def captureBamboo(implicit env: Env): BuildScan => BuildScan = {
     if (!isBamboo) identity
     else {
       val ops = Seq(
@@ -185,7 +196,7 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
     }
   }
 
-  private val captureGitHubActions: BuildScan => BuildScan = {
+  private def captureGitHubActions(implicit env: Env): BuildScan => BuildScan = {
     if (!isGitHubActions) identity
     else {
       val buildUrl = for {
@@ -205,7 +216,7 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
     }
   }
 
-  private val captureGitLab: BuildScan => BuildScan = {
+  private def captureGitLab(implicit env: Env): BuildScan => BuildScan = {
     if (!isGitLab) identity
     else {
       val ops = Seq(
@@ -219,7 +230,7 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
     }
   }
 
-  private val captureTravis: BuildScan => BuildScan = {
+  private def captureTravis(implicit env: Env): BuildScan => BuildScan = {
     if (!isTravis) identity
     else {
       val ops = Seq(
@@ -233,7 +244,7 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
     }
   }
 
-  private val captureBitrise: BuildScan => BuildScan = {
+  private def captureBitrise(implicit env: Env): BuildScan => BuildScan = {
     if (!isBitrise) identity
     else {
       val ops = Seq(
@@ -245,7 +256,7 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
     }
   }
 
-  private val captureGoCd: BuildScan => BuildScan = {
+  private def captureGoCd(implicit env: Env): BuildScan => BuildScan = {
     if (!isGoCD) identity
     else {
       val pipelineName = env.envVariable[String]("GO_PIPELINE_NAME")
@@ -275,7 +286,7 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
     }
   }
 
-  private val captureAzurePipelines: BuildScan => BuildScan = {
+  private def captureAzurePipelines(implicit env: Env): BuildScan => BuildScan = {
     if (!isAzurePipelines) identity
     else {
       val azureServerUrl = env.envVariable[URL]("SYSTEM_TEAMFOUNDATIONCOLLECTIONURI")
@@ -296,7 +307,7 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
     }
   }
 
-  private val captureBuildkite: BuildScan => BuildScan = {
+  private def captureBuildkite(implicit env: Env): BuildScan => BuildScan = {
     if (!isBuildkite) identity
     else {
       val prSource = for {
@@ -316,7 +327,7 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
     }
   }
 
-  private val captureGitMetadata: BuildScan => BuildScan = {
+  private def captureGitMetadata(implicit env: Env): BuildScan => BuildScan = {
     if (!isGitInstalled) identity
     else {
       val gitRepo = execAndGetStdOut("git", "config", "--get", "remote.origin.url")
@@ -358,14 +369,13 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
     installed
   }
 
-  private def getGitBranchName(): Option[String] = {
+  private def getGitBranchName()(implicit env: Env): Option[String] = {
     val branch =
       if (isJenkins || isHudson) {
         env.envVariable[String]("BRANCH_NAME").orElse {
           env.envVariable[String]("GIT_BRANCH").flatMap(getLocalBranch)
         }
-      }
-      else if (isGitLab) env.envVariable[String]("CI_COMMIT_REF_NAME")
+      } else if (isGitLab) env.envVariable[String]("CI_COMMIT_REF_NAME")
       else if (isAzurePipelines) env.envVariable[String]("BUILD_SOURCEBRANCH")
       else if (isBuildkite) env.envVariable[String]("BUILDKITE_BRANCH")
       else if (isGitHubActions) env.envVariable[String]("GITHUB_REF_NAME")
@@ -377,7 +387,8 @@ class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[Strin
     // This finds the longest matching remote name. This is because, for example, a local git clone could have
     // two remotes named `origin` and `origin/two`. In this scenario, we would want a remote branch of
     // `origin/two/main` to match to the `origin/two` remote, not to `origin`
-    Utils.execAndGetStdOut("git", "remote")
+    Utils
+      .execAndGetStdOut("git", "remote")
       .map(remotes => remotes.split("\\R").filter((remote) => remoteBranch.startsWith(remote + "/")).maxBy(_.length))
       .map(remote => remoteBranch.replaceFirst("^" + remote + "/", ""))
   }

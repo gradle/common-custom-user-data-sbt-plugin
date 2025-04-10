@@ -1,0 +1,3 @@
+# Check that overrides applied through system properties are correctly taken
+# into account in the Build Scan configuration.
+> checkOverrides

@@ -1,3 +1,6 @@
+# Verify that the basic custom values, tags and links that the plugin injects
+# are present and compose correctly with the ones set by the user in their
+# build.
 > checkCustomValues
 > checkTags
 > checkLinks

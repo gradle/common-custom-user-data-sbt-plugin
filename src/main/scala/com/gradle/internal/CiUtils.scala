@@ -32,4 +32,9 @@ object CiUtils {
 
   private[gradle] def isBuildkite(implicit env: Env) = env.envVariable[Unit]("BUILDKITE").isDefined
 
+  private[gradle] def ciOnly[T](op: => Option[T])(implicit env: Env): Option[T] = {
+    if (isCi) op
+    else None
+  }
+
 }

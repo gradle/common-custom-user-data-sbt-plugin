@@ -4,6 +4,7 @@ import com.gradle.develocity.agent.sbt.api.configuration.BuildScan
 import com.gradle.develocity.agent.sbt.api.configuration.DevelocityConfiguration
 import com.gradle.develocity.agent.sbt.api.configuration.Server
 import com.gradle.internal.CiUtils.{
+  ciOnly,
   isAzurePipelines,
   isBamboo,
   isBitrise,
@@ -331,10 +332,14 @@ private class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: S
     if (!isGitInstalled) identity
     else {
       val gitRepo = execAndGetStdOut("git", "config", "--get", "remote.origin.url")
-      val gitCommitId = execAndGetStdOut("git", "rev-parse", "--verify", "HEAD")
-      val gitCommitShortId = execAndGetStdOut("git", "rev-parse", "--short=8", "--verify", "HEAD")
-      val gitBranchName = getGitBranchName()
-      val gitStatus = execAndGetStdOut("git", "status", "--porcelain")
+
+      // The following are likely to change between runs in interactive mode, so we capture them
+      // if and only if we're in CI.
+      val gitCommitId = ciOnly(execAndGetStdOut("git", "rev-parse", "--verify", "HEAD"))
+      val gitCommitShortId = ciOnly(execAndGetStdOut("git", "rev-parse", "--short=8", "--verify", "HEAD"))
+      val gitBranchName = ciOnly(getGitBranchName())
+      val gitStatus = ciOnly(execAndGetStdOut("git", "status", "--porcelain"))
+
       val githubRepositoryLink = for {
         githubUrl <- env.envVariable[URL]("GITHUB_SERVER_URL")
         repository <- env.envVariable[String]("GITHUB_REPOSITORY")

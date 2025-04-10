@@ -65,7 +65,7 @@ object Utils {
       timeout: Duration = Duration(10, TimeUnit.SECONDS),
       io: ProcessIO = BasicIO.standard(connectInput = false)
   ): Int = {
-    val process = cmd.mkString(" ").run()
+    val process = cmd.mkString(" ").run(io)
     val future = Future(blocking(process.exitValue()))
     try Await.result(future, timeout)
     catch {

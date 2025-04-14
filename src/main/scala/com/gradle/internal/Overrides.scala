@@ -1,5 +1,7 @@
 package com.gradle.internal
 
+import com.gradle.Env
+import com.gradle.Transformer
 import com.gradle.develocity.agent.sbt.api.configuration.Server
 import java.net.URL
 

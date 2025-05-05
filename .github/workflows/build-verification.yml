@@ -14,7 +14,9 @@ jobs:
         with:
           java-version: '8'
           distribution: 'temurin'
+      - name: Setup sbt installer
+        uses: sbt/setup-sbt@v1.1.7
       - name: Build with sbt
-        run: ./sbtx clean test scripted sbt-example-company-plugin/scripted
+        run: sbt clean test scripted sbt-example-company-plugin/scripted
         env:
           DEVELOCITY_ACCESS_KEY: ${{ secrets.DV_SOLUTIONS_ACCESS_KEY }}

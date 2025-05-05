@@ -3,7 +3,7 @@ package com.gradle
 import scala.concurrent.{Await, Future, blocking}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
-import scala.sys.process.{BasicIO, ProcessIO, ProcessLogger, stringToProcess}
+import scala.sys.process.{BasicIO, Process, ProcessIO, ProcessLogger}
 import java.util.concurrent.{TimeoutException, TimeUnit}
 
 object ProcessUtils {
@@ -21,7 +21,7 @@ object ProcessUtils {
       timeout: Duration = Duration(10, TimeUnit.SECONDS),
       io: ProcessIO = BasicIO.standard(connectInput = false)
   ): Int = {
-    val process = cmd.mkString(" ").run(io)
+    val process = Process(cmd).run(io)
     val future = Future(blocking(process.exitValue()))
     try Await.result(future, timeout)
     catch {

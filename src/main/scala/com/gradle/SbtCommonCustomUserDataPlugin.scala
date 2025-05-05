@@ -4,7 +4,6 @@ import com.gradle.develocity.agent.sbt.DevelocityPlugin
 import com.gradle.develocity.agent.sbt.DevelocityPlugin.autoImport.{DevelocityConfiguration, develocityConfiguration}
 import com.gradle.internal.{CustomBuildScanEnhancements, Overrides}
 import sbt.{AutoPlugin, Keys, Logger, Plugins, Setting, ScopeFilter, inAnyProject}
-import com.gradle.internal.Env
 
 object SbtCommonCustomUserDataPlugin extends AutoPlugin {
 

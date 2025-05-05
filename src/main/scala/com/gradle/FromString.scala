@@ -1,9 +1,14 @@
-package com.gradle.internal
+package com.gradle
 
 import scala.util.Try
 import java.net.URL
 
+/**
+  * Denotes types that can be constructed from a `String` representation.
+  */
 trait FromString[T] {
+
+  /** Build a value of type `T` from its `String` representation. */
   def apply(v: String): Option[T]
 }
 

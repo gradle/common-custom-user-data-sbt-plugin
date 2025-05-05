@@ -51,7 +51,7 @@ The additional tags, links and custom values captured by this plugin include:
 - A tag representing the operating system
 - A tag representing how the build was invoked, be that from your IDE (IDEA, Eclipse) or from the command-line
 - A tag representing builds run on CI, together with a set of tags, links and custom values specific to the CI server running the build
-- For Git repositories, information on the commit id, branch name, status, and whether the checkout is dirty or not
+- For Git repositories, when running the build in CI, information on the commit id, branch name, status, and whether the checkout is dirty
 
 See [CustomBuildScanEnhancements.scala](./src/main/scala/com/gradle/internal/CustomBuildScanEnhancements.scala) for details on what data is
 captured and under which conditions.
@@ -82,18 +82,34 @@ sbt -Ddevelocity.url=https://ge.solutions-team.gradle.com/ run
 
 </details>
 
-## Developing a customized version of the plugin
+## Extending the plugin
 
-For more flexibility, we recommend creating a copy of this repository so that you may develop a customized version of the plugin and publish it internally for your projects to consume.
+If your organization requires a custom version of this plugin (for instance,
+you may want to include more custom values, tags and links, or standardize the
+configuration of the build cache or test retry), then we recommend that you
+create a new plugin that depends on this plugin, and that you apply your
+customized plugin to your projects.
+
+An example of such a plugin can be found in [sbt-example-company-plugin](./sbt-example-company-plugin).
+
+You can use [sbt-example-company-plugin](./sbt-example-company-plugin) as
+scaffolding to implement your own plugin.
 
 This approach has a number of benefits:
-- Tailor the build scan enhancements to exactly the set of tags, links and custom values you require
-- Standardize the configuration for connecting to Develocity and the remote build cache in your organization, removing the need for each project to specify this configuration
+- Tailor the build scan enhancements to exactly the set of tags, links and
+  custom values you require
+- Standardize the configuration for connecting to Develocity and the remote
+  build cache in your organization, removing the need for each project to
+  specify this configuration
 
-If your customized plugin provides all required Develocity configuration, then a consumer project will get all the benefits of Develocity simply by applying the plugin. The
-project sources provide a good template to get started with your own plugin.
+If your customized plugin provides all required Develocity configuration, then
+a consumer project will get all the benefits of Develocity simply by applying
+the plugin. The project sources provide a good template to get started with
+your own plugin.
 
-Refer to the [Javadoc](https://docs.gradle.com/enterprise/sbt-plugin/api/com/gradle/develocity/agent/sbt/api/configuration/) for more details on the key types available for use.
+Refer to the
+[scaladoc](https://docs.gradle.com/enterprise/sbt-plugin/api/com/gradle/develocity/agent/sbt/api/configuration/)
+for more details on the key types available for use.
 
 ## Changelog
 

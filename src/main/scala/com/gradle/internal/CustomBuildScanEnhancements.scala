@@ -1,5 +1,7 @@
 package com.gradle.internal
 
+import com.gradle.Env
+import com.gradle.Transformer
 import com.gradle.develocity.agent.sbt.api.configuration.BuildScan
 import com.gradle.develocity.agent.sbt.api.configuration.DevelocityConfiguration
 import com.gradle.develocity.agent.sbt.api.configuration.Server
@@ -19,10 +21,9 @@ import com.gradle.internal.CiUtils.{
   isTeamCity,
   isTravis
 }
+import com.gradle.ProcessUtils.{execAndCheckSuccess, execAndGetStdOut}
 import com.gradle.internal.Utils.{
   appendIfMissing,
-  execAndCheckSuccess,
-  execAndGetStdOut,
   getProperty,
   readPropertiesFile,
   redactUserInfo,
@@ -392,8 +393,7 @@ private class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: S
     // This finds the longest matching remote name. This is because, for example, a local git clone could have
     // two remotes named `origin` and `origin/two`. In this scenario, we would want a remote branch of
     // `origin/two/main` to match to the `origin/two` remote, not to `origin`
-    Utils
-      .execAndGetStdOut("git", "remote")
+    execAndGetStdOut("git", "remote")
       .map(remotes => remotes.split("\\R").filter((remote) => remoteBranch.startsWith(remote + "/")).maxBy(_.length))
       .map(remote => remoteBranch.replaceFirst("^" + remote + "/", ""))
   }

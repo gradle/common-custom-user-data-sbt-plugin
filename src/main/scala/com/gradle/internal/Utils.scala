@@ -4,13 +4,8 @@ import java.io.{File, UnsupportedEncodingException}
 import java.net.{URI, URLEncoder}
 import java.nio.charset.StandardCharsets
 import java.util.Properties
-import scala.concurrent.{Await, Future, blocking}
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration.Duration
-import scala.sys.process.{BasicIO, ProcessIO, ProcessLogger, stringToProcess}
 import scala.util.Try
 import sbt.io.Using
-import java.util.concurrent.TimeUnit
 
 object Utils {
 
@@ -21,8 +16,6 @@ object Utils {
     if (string.nonEmpty && string.charAt(string.length - 1) == suffix) string
     else string + suffix
   }
-
-  private def trimAtEnd(str: String) = ('x' + str).trim.substring(1)
 
   private[gradle] def urlEncode(str: String) = {
     try {
@@ -58,38 +51,6 @@ object Utils {
     Try(new URI(url)).toOption.flatMap(uri => Option(uri.getUserInfo)) match {
       case None       => url
       case Some(info) => url.replace(info + '@', "******@")
-    }
-  }
-
-  private[gradle] def exec(cmd: String*)(
-      timeout: Duration = Duration(10, TimeUnit.SECONDS),
-      io: ProcessIO = BasicIO.standard(connectInput = false)
-  ): Int = {
-    val process = cmd.mkString(" ").run(io)
-    val future = Future(blocking(process.exitValue()))
-    try Await.result(future, timeout)
-    catch {
-      case _: java.util.concurrent.TimeoutException =>
-        process.destroy()
-        process.exitValue()
-    }
-  }
-
-  private[gradle] def execAndCheckSuccess(args: String*): Boolean = {
-    exec(args: _*)() == 0
-  }
-
-  private[gradle] def execAndGetStdOut(args: String*): Option[String] = {
-    val output = new StringBuffer()
-    val logger = new ProcessLogger {
-      override def buffer[T](f: => T): T = f
-      override def err(s: => String): Unit = () // ignored
-      override def out(s: => String): Unit = output.append(s).append(System.lineSeparator())
-    }
-    val io = BasicIO(false, logger)
-    exec(args: _*)(io = io) match {
-      case 0 => Some(trimAtEnd(output.toString)).filter(_.nonEmpty)
-      case _ => None
     }
   }
 

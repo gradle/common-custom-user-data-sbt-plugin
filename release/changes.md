@@ -1,1 +1,2 @@
 - [FIX] Empty "PR branch" custom value in some situations
+- [FIX] Remove misleading "Scala versions" custom value

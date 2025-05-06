@@ -35,10 +35,10 @@ import java.net.URL
 import sbt.Logger
 
 object CustomBuildScanEnhancements {
-  def transformer(scalaVersions: Seq[String], logger: Logger): Transformer[DevelocityConfiguration] = {
+  def transformer(logger: Logger): Transformer[DevelocityConfiguration] = {
     new Transformer[DevelocityConfiguration] {
       override def transform(in: DevelocityConfiguration)(implicit env: Env): DevelocityConfiguration = {
-        val transformer = new CustomBuildScanEnhancements(in.server, scalaVersions, logger)
+        val transformer = new CustomBuildScanEnhancements(in.server, logger)
         val newBuildScan = transformer.transform(in.buildScan)
         in.withBuildScan(newBuildScan)
       }
@@ -49,8 +49,7 @@ object CustomBuildScanEnhancements {
 /**
  * Adds a standard set of useful tags, links and custom values to all build scans published.
  */
-private class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: Seq[String], logger: Logger)
-    extends Transformer[BuildScan] {
+private class CustomBuildScanEnhancements(serverConfig: Server, logger: Logger) extends Transformer[BuildScan] {
 
   private val SYSTEM_PROP_IDEA_VENDOR_NAME = Env.Key[String]("idea.vendor.name")
   private val SYSTEM_PROP_IDEA_VERSION = Env.Key[String]("idea.version")
@@ -64,8 +63,7 @@ private class CustomBuildScanEnhancements(serverConfig: Server, scalaVersions: S
       captureIde,
       captureCiOrLocal,
       captureCiMetadata,
-      captureGitMetadata,
-      (_: BuildScan).withValue("Scala versions", scalaVersions.mkString(","))
+      captureGitMetadata
     )
     Function.chain(ops)(originBuildScan)
   }

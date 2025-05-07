@@ -19,7 +19,7 @@ ThisBuild / develocityConfiguration ~= { prev =>
 
 checkCustomValues := {
   val customValues = (ThisBuild / develocityConfiguration).value.buildScan.values
-  val expectedCustomValues = ownCustomValues ++ Map("Scala versions" -> scalaVersion.value)
+  val expectedCustomValues = ownCustomValues
 
   expectedCustomValues.foreach { case (key, value) =>
     assertEquals(key -> Some(value), key -> customValues.get(key))

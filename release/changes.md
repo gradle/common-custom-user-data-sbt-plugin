@@ -1,2 +1,3 @@
 - [FIX] Empty "PR branch" custom value in some situations
+- [FIX] Outdated custom values in interactive mode
 - [FIX] Remove misleading "Scala versions" custom value

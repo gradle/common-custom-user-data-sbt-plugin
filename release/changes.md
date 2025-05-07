@@ -1,3 +1,0 @@
-- [FIX] Empty "PR branch" custom value in some situations
-- [FIX] Outdated custom values outside of CI
-- [FIX] Remove misleading "Scala versions" custom value

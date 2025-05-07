@@ -8,19 +8,18 @@ ThisBuild / dynverSonatypeSnapshots := true
 
 sbtPlugin := true
 
-ThisBuild / develocityConfiguration :=
-  DevelocityConfiguration(
-    server = Server(
-      url = Some(url("https://ge.solutions-team.gradle.com"))
-    ),
-    buildScan = BuildScan(
-      obfuscation = Obfuscation(
-        ipAddresses = _.map(_ => "0.0.0.0")
-      ),
-      backgroundUpload = !sys.env.contains("CI"),
-      publishing = Publishing.onlyIf { _.authenticated },
+ThisBuild / develocityConfiguration ~= { prev =>
+  prev
+    .withServer(
+      prev.server.withUrl(Some(url("https://ge.solutions-team.gradle.com")))
     )
-  )
+    .withBuildScan(
+      prev.buildScan
+        .withObfuscation(prev.buildScan.obfuscation.withIpAddresses(_.map(_ => "0.0.0.0")))
+        .withBackgroundUpload(!sys.env.contains("CI"))
+        .withPublishing(Publishing.onlyIf(_.authenticated))
+    )
+}
 
 lazy val sbtCommonCustomUserDataPlugin = (project in file("."))
   .enablePlugins(SbtPlugin)
@@ -33,7 +32,7 @@ lazy val sbtCommonCustomUserDataPlugin = (project in file("."))
     name := "Develocity Common Custom User Data sbt Plugin",
     normalizedName := "sbt-develocity-common-custom-user-data",
     libraryDependencies ++= Seq(
-      scalaTest % Test,
+      scalaTest % Test
     ),
     pluginCrossBuild / sbtVersion := {
       scalaBinaryVersion.value match {
@@ -44,14 +43,14 @@ lazy val sbtCommonCustomUserDataPlugin = (project in file("."))
     scriptedLaunchOpts ++= Seq(
       "-Xmx1024M",
       "-Dplugin.version=" + version.value,
-      "-Dscan=false", // Don't publish build scans from scripted builds
+      "-Dscan=false" // Don't publish build scans from scripted builds
     )
   )
 
 // Publishing setup
 ThisBuild / description := "A sbt plugin to capture common custom user data used for sbt Build Scans in Develocity"
-ThisBuild / licenses    := List("Apache-2.0" -> new URL("http://www.apache.org/licenses/LICENSE-2.0.txt"))
-ThisBuild / homepage    := Some(url("https://github.com/gradle/common-custom-user-data-sbt-plugin"))
+ThisBuild / licenses := List("Apache-2.0" -> new URL("http://www.apache.org/licenses/LICENSE-2.0.txt"))
+ThisBuild / homepage := Some(url("https://github.com/gradle/common-custom-user-data-sbt-plugin"))
 ThisBuild / scmInfo := Some(
   ScmInfo(
     url("https://github.com/gradle/common-custom-user-data-sbt-plugin"),
@@ -93,5 +92,11 @@ credentials ++= {
 }
 publishM2Configuration := publishM2Configuration.value.withOverwrite(true) // allows overwriting local .m2 publishings
 
-addCommandAlias("publishSbtSnapshot", "; set publishTo := Some(\"SbtSnapshot\" at \"https://repo.grdev.net/artifactory/enterprise-libs-sbt-snapshots-local\") ; publish")
-addCommandAlias("publishSbtRc", "; set publishTo := Some(\"SbtReleaseCandidate\" at \"https://repo.grdev.net/artifactory/enterprise-libs-sbt-release-candidates-local\") ; publish")
+addCommandAlias(
+  "publishSbtSnapshot",
+  "; set publishTo := Some(\"SbtSnapshot\" at \"https://repo.grdev.net/artifactory/enterprise-libs-sbt-snapshots-local\") ; publish"
+)
+addCommandAlias(
+  "publishSbtRc",
+  "; set publishTo := Some(\"SbtReleaseCandidate\" at \"https://repo.grdev.net/artifactory/enterprise-libs-sbt-release-candidates-local\") ; publish"
+)

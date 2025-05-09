@@ -56,6 +56,8 @@ private class CustomBuildScanEnhancements(serverConfig: Server, logger: Logger) 
   private val SYSTEM_PROP_IDEA_MANAGED = Env.Key[String]("idea.managed")
   private val SYSTEM_PROP_ECLIPSE_BUILD_ID = Env.Key[String]("eclipse.buildId")
   private val ENV_VARIABLE_IDEA_DIR = Env.Key[String]("IDEA_INITIAL_DIRECTORY")
+  private val ENV_VAR_VSCODE_PID = Env.Key[String]("VSCODE_PID")
+  private val ENV_VAR_VSCODE_INJECTION = Env.Key[String]("VSCODE_INJECTION")
 
   override def transform(originBuildScan: BuildScan)(implicit env: Env): BuildScan = {
     val ops = Seq(
@@ -86,6 +88,8 @@ private class CustomBuildScanEnhancements(serverConfig: Server, logger: Logger) 
           .orElse(env.sysProperty(SYSTEM_PROP_IDEA_MANAGED).map(_ => ("IntelliJ IDEA", None)))
           .orElse(env.envVariable(ENV_VARIABLE_IDEA_DIR).map(_ => ("IntelliJ IDEA", None)))
           .orElse(env.sysProperty(SYSTEM_PROP_ECLIPSE_BUILD_ID).map(v => ("Eclipse", Some(v))))
+          .orElse(env.envVariable(ENV_VAR_VSCODE_PID).map(_ => ("VS Code", None)))
+          .orElse(env.envVariable(ENV_VAR_VSCODE_INJECTION).map(_ => ("VS Code", None)))
           .getOrElse(("Cmd Line", None))
 
       val ops = Seq(

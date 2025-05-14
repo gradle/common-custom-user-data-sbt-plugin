@@ -5,3 +5,9 @@ to/
 build/
 target/
 *.DS_Store
+# VS Code support
+.bloop/
+.metals/
+.vscode/
+.scala-build/
+**/metals.sbt

@@ -15,7 +15,7 @@ jobs:
           java-version: '8'
           distribution: 'temurin'
       - name: Setup sbt installer
-        uses: sbt/setup-sbt@v1.1.7
+        uses: sbt/setup-sbt@v1.1.8
       - name: Build with sbt
         run: sbt clean test scripted
         env:

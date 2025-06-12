@@ -1,7 +1,7 @@
 package com.gradle.internal
 
 import java.io.{File, UnsupportedEncodingException}
-import java.net.{URI, URLEncoder}
+import java.net.{URI, URLEncoder, URISyntaxException}
 import java.nio.charset.StandardCharsets
 import java.util.Properties
 import scala.util.Try
@@ -47,10 +47,24 @@ object Utils {
     Try(new URI(scheme, host, path, null)).toOption
   }
 
-  private[gradle] def redactUserInfo(url: String): String = {
-    Try(new URI(url)).toOption.flatMap(uri => Option(uri.getUserInfo)) match {
-      case None       => url
-      case Some(info) => url.replace(info + '@', "******@")
+  private[gradle] def redactUserInfo(url: String): Option[String] = {
+    if (!url.startsWith("http")) {
+      return Some(url)
+    }
+
+    try {
+      val uri = new URI(url)
+      val redactedUri = new URI(
+        uri.getScheme(),
+        if (uri.getUserInfo() == null || uri.getUserInfo().isEmpty()) null else "******",
+        uri.getHost(),
+        uri.getPort(),
+        uri.getRawPath(),
+        uri.getRawQuery(),
+        uri.getRawFragment())
+      Some(redactedUri.toString)
+    } catch {
+      case _: URISyntaxException => None
     }
   }
 

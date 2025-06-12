@@ -14,6 +14,12 @@ class UtilsTest extends AnyFlatSpec with Matchers with TableDrivenPropertyChecks
     }
   }
 
+  "Utils" should "Redact URL-encoded characters in userinfo of URLs" in {
+    forEvery(userInfoTable) { (uri, redactedUri) =>
+      assertResult(Option(redactedUri))(Utils.redactUserInfo(uri))
+    }
+  }
+
   private lazy val webRepoUriArgumentsTable = {
     val rows = for (host <- hosts; repo <- repos) yield (replaceHost(repo._1, host), replaceHost(repo._2, host))
     Table(
@@ -42,6 +48,14 @@ class UtilsTest extends AnyFlatSpec with Matchers with TableDrivenPropertyChecks
     // Enterprise repos
     ("https://%s.acme.com/acme-inc/my-project", "https://%s.acme.com/acme-inc/my-project"),
     ("git@%s.acme.com/acme-inc/my-project.git", "https://%s.acme.com/acme-inc/my-project")
+  )
+
+  private val userInfoTable = Table(
+    ("https://user:password@acme.com/acme-inc/my-project", "https://******@acme.com/acme-inc/my-project"),
+    ("https://user%1Fname:password@acme.com/acme-inc/my-project", "https://******@acme.com/acme-inc/my-project"),
+    ("https://user:secret%1Fpassword@acme.com/acme-inc/my-project", "https://******@acme.com/acme-inc/my-project"),
+    ("https://user:secret%1password@acme.com/acme-inc/my-project", null),
+    ("git@github.com:gradle/common-custom-user-data-gradle-plugin.git", "git@github.com:gradle/common-custom-user-data-gradle-plugin.git")
   )
 
 }

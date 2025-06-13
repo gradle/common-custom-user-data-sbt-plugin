@@ -1,7 +1,7 @@
 package com.gradle.internal
 
 import java.io.{File, UnsupportedEncodingException}
-import java.net.{URI, URLEncoder, URISyntaxException}
+import java.net.{URI, URLEncoder}
 import java.nio.charset.StandardCharsets
 import java.util.Properties
 import scala.util.Try
@@ -47,26 +47,13 @@ object Utils {
     Try(new URI(scheme, host, path, null)).toOption
   }
 
-  private[gradle] def redactUserInfo(url: String): Option[String] = {
-    if (!url.startsWith("http")) {
-      return Some(url)
-    }
+  private[gradle] def redactUserInfo(url: String): Option[String] =
+    if (!url.startsWith("http")) Some(url) else Try(new URI(url)).toOption.map(redactUserInfo).map(_.toString)
 
-    try {
-      val uri = new URI(url)
-      val redactedUri = new URI(
-        uri.getScheme(),
-        if (uri.getUserInfo() == null || uri.getUserInfo().isEmpty()) null else "******",
-        uri.getHost(),
-        uri.getPort(),
-        uri.getRawPath(),
-        uri.getRawQuery(),
-        uri.getRawFragment())
-      Some(redactedUri.toString)
-    } catch {
-      case _: URISyntaxException => None
-    }
-  }
+  private def redactUserInfo(u: URI): URI =
+    new URI(u.getScheme, redact(u.getUserInfo), u.getHost, u.getPort, u.getRawPath, u.getRawQuery, u.getRawFragment)
+
+  private def redact(s: String) = if (s == null || s.isEmpty) null else "******"
 
   private[gradle] def readPropertiesFile(filename: String): Properties = {
     val properties = new Properties

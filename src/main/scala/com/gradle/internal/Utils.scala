@@ -47,12 +47,13 @@ object Utils {
     Try(new URI(scheme, host, path, null)).toOption
   }
 
-  private[gradle] def redactUserInfo(url: String): String = {
-    Try(new URI(url)).toOption.flatMap(uri => Option(uri.getUserInfo)) match {
-      case None       => url
-      case Some(info) => url.replace(info + '@', "******@")
-    }
-  }
+  private[gradle] def redactUserInfo(url: String): Option[String] =
+    if (!url.startsWith("http")) Some(url) else Try(new URI(url)).toOption.map(redactUserInfo).map(_.toString)
+
+  private def redactUserInfo(u: URI): URI =
+    new URI(u.getScheme, redact(u.getUserInfo), u.getHost, u.getPort, u.getRawPath, u.getRawQuery, u.getRawFragment)
+
+  private def redact(s: String) = if (s == null || s.isEmpty) null else "******"
 
   private[gradle] def readPropertiesFile(filename: String): Properties = {
     val properties = new Properties

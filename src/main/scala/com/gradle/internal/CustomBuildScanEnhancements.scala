@@ -360,7 +360,7 @@ private class CustomBuildScanEnhancements(serverConfig: Server, logger: Logger) 
       }
 
       val ops = Seq(
-        ifDefined(gitRepo)((bs, repo) => bs.withValue("Git repository", redactUserInfo(repo))),
+        ifDefined(gitRepo)((bs, repo) => redactUserInfo(repo).map(redactedRepo => bs.withValue("Git repository", redactedRepo)).getOrElse(bs)),
         ifDefined(gitCommitId)(_.withValue("Git commit id", _)),
         ifDefined(gitCommitShortId)(withCustomValueAndSearchLink(_, "Git commit id", "Git commit id short", _)),
         ifDefined(gitBranchName) { (bs, branch) => bs.withTag(branch).withValue("Git branch", branch) },

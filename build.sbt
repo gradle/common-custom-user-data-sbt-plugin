@@ -70,14 +70,15 @@ ThisBuild / pomIncludeRepository := { _ => false }
 ThisBuild / publishMavenStyle := true
 ThisBuild / versionScheme := Some("semver-spec")
 ThisBuild / publishTo := {
-  if (isSnapshot.value) Some("ossrh" at "https://s01.oss.sonatype.org/content/repositories/snapshots")
-  else Some("ossrh" at "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2")
+  val centralSnapshots = "https://central.sonatype.com/repository/maven-snapshots/"
+  if (isSnapshot.value) Some("central-snapshots" at centralSnapshots)
+  else localStaging.value
 }
 credentials ++= {
   for {
     username <- sys.env.get("OSSRH_REPO_USER")
     password <- sys.env.get("OSSRH_REPO_PASSWORD")
-  } yield Credentials("Sonatype Nexus Repository Manager", "s01.oss.sonatype.org", username, password)
+  } yield Credentials("Sonatype Nexus Repository Manager", "central.sonatype.com", username, password)
 }
 credentials ++= {
   for {

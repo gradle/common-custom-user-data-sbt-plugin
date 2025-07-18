@@ -1,1 +1,0 @@
-[FIX] sbt-develocity-common-custom-user-data version 1.2 cannot be resolved with sbt versions older than 1.9

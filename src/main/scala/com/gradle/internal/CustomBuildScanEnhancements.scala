@@ -214,6 +214,8 @@ private class CustomBuildScanEnhancements(serverConfig: Server, logger: Logger) 
         ifDefined(buildUrl)(_.withLink("GitHub Actions build", _)),
         ifDefined(env.envVariable[String]("GITHUB_WORKFLOW"))(withCustomValueAndSearchLink(_, "CI workflow", _)),
         ifDefined(env.envVariable[String]("GITHUB_RUN_ID"))(withCustomValueAndSearchLink(_, "CI run", _)),
+        ifDefined(env.envVariable[String]("GITHUB_ACTION"))(withCustomValueAndSearchLink(_, "CI step", _)),
+        ifDefined(env.envVariable[String]("GITHUB_JOB"))(withCustomValueAndSearchLink(_, "CI job", _)),
         ifDefined(env.envVariable[String]("GITHUB_HEAD_REF").filter(_.nonEmpty))(_.withValue("PR branch", _))
       )
       Function.chain(ops)

@@ -1,2 +1,0 @@
-- [NEW] Added tagging VS Code builds
-- [FiX] Redact user info from git urls when the user info contains a URL-encoded character

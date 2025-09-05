@@ -203,20 +203,41 @@ private class CustomBuildScanEnhancements(serverConfig: Server, logger: Logger) 
   private def captureGitHubActions(implicit env: Env): BuildScan => BuildScan = {
     if (!isGitHubActions) identity
     else {
-      val buildUrl = for {
-        url <- env.envVariable[URL]("GITHUB_SERVER_URL")
-        repository <- env.envVariable[String]("GITHUB_REPOSITORY")
-        runId <- env.envVariable[String]("GITHUB_RUN_ID")
-      } yield sbt.url(s"$url/$repository/actions/runs/$runId")
+      val workflow = env.envVariable[String]("GITHUB_WORKFLOW")
+      val jobId = env.envVariable[String]("GITHUB_JOB")
+      val actionNameOrStepId = env.envVariable[String]("GITHUB_ACTION")
+      val runId = env.envVariable[String]("GITHUB_RUN_ID")
+      val runAttempt = env.envVariable[String]("GITHUB_RUN_ATTEMPT")
+      val runNumber = env.envVariable[String]("GITHUB_RUN_NUMBER")
+      val headRef = env.envVariable[String]("GITHUB_HEAD_REF").filter(_.nonEmpty)
+      val serverUrl = env.envVariable[URL]("GITHUB_SERVER_URL")
+      val gitRepository = env.envVariable[String]("GITHUB_REPOSITORY")
+
+      val githubActionsBuild = for {
+        url <- serverUrl
+        repo <- gitRepository
+        id <- runId
+      } yield {
+        val base = s"$url/$repo/actions/runs/$id"
+        val githubActionsBuildWithAttempt = runAttempt.map(a => s"$base/attempts/$a").getOrElse(base)
+        sbt.url(githubActionsBuildWithAttempt)
+      }
 
       val ops = Seq(
         (bs: BuildScan) => bs.withValue("CI provider", "GitHub Actions"),
-        ifDefined(buildUrl)(_.withLink("GitHub Actions build", _)),
-        ifDefined(env.envVariable[String]("GITHUB_WORKFLOW"))(withCustomValueAndSearchLink(_, "CI workflow", _)),
-        ifDefined(env.envVariable[String]("GITHUB_RUN_ID"))(withCustomValueAndSearchLink(_, "CI run", _)),
-        ifDefined(env.envVariable[String]("GITHUB_ACTION"))(withCustomValueAndSearchLink(_, "CI step", _)),
-        ifDefined(env.envVariable[String]("GITHUB_JOB"))(withCustomValueAndSearchLink(_, "CI job", _)),
-        ifDefined(env.envVariable[String]("GITHUB_HEAD_REF").filter(_.nonEmpty))(_.withValue("PR branch", _))
+        ifDefined(workflow)(withCustomValueAndSearchLink(_, "CI workflow", _)),
+        ifDefined(jobId)(withCustomValueAndSearchLink(_, "CI job", _)),
+        ifDefined(actionNameOrStepId)(withCustomValueAndSearchLink(_, "CI step", _)),
+        ifDefined(runId)(_.withValue("CI run", _)),
+        ifDefined(runAttempt)(_.withValue("CI run attempt", _)),
+        ifDefined(runNumber)(_.withValue("CI run number", _)),
+        ifDefined(headRef)(_.withValue("PR branch", _)),
+        ifDefined(githubActionsBuild)(_.withLink("GitHub Actions build", _)),
+        ifDefined(runId) { (bs, id) =>
+          val params = collection.mutable.Map("CI run" -> id)
+          runAttempt.foreach(a => params += ("CI run attempt" -> a))
+          withSearchLink(bs, "CI run", params.toMap)
+        }
       )
       Function.chain(ops)
     }

@@ -15,7 +15,7 @@ jobs:
           java-version: '8'
           distribution: 'temurin'
       - name: Setup sbt installer
-        uses: sbt/setup-sbt@v1.1.12
+        uses: sbt/setup-sbt@v1.1.13
       - name: Build and publish to M2 with sbt
         run: sbt clean test scripted publishM2
         env:
@@ -39,7 +39,7 @@ jobs:
           java-version: '8'
           distribution: 'temurin'
       - name: Setup sbt installer
-        uses: sbt/setup-sbt@v1.1.12
+        uses: sbt/setup-sbt@v1.1.13
       - name: Download plugin to maven local
         uses: actions/download-artifact@v5
         with:

@@ -35,6 +35,7 @@ lazy val sbtCommonCustomUserDataPlugin = (project in file("."))
       scalaTest % Test
     ),
     Compile / unmanagedResources += (ThisBuild / baseDirectory).value / "LICENSE",
+    Compile / unmanagedResources ++= (baseDirectory.value / "release" / "distribution" * "*").get,
     pluginCrossBuild / sbtVersion := {
       scalaBinaryVersion.value match {
         case "2.12" => "1.6.0" // set minimum sbt version - best to keep it in sync with the GE plugin

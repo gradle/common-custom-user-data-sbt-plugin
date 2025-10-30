@@ -1,0 +1,2 @@
+- [NEW] Custom values: Added CI Action and CI job id to GitHub Action executions
+- [NEW] Include LICENSE and NOTICE files in packaged JAR, source, and javadoc JARs

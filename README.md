@@ -29,7 +29,7 @@ Develocity plugin to be applied in your build to function.
 To activate the sbt Develocity Common Custom User Data plugin, add it to your project's `project/plugins.sbt` file, where you've already declared the main sbt Develocity plugin.
 
 ```
-addSbtPlugin("com.gradle" % "sbt-develocity-common-custom-user-data" % "1.2")
+addSbtPlugin("com.gradle" % "sbt-develocity-common-custom-user-data" % "1.2.1")
 ```
 
 For an example, see the [plugins.sbt](./project/plugins.sbt) file.
@@ -40,7 +40,7 @@ This table details the version compatibility of the sbt Develocity Common Custom
 
 | sbt Develocity Common Custom User Data plugin (this) versions | sbt Develocity plugin versions | sbt versions |
 |---------------------------------------------------------------|--------------------------------|--------------|
-| 1.2                                                           | 1.3                            | 1.9.0+       |
+| 1.2.1                                                         | 1.3                            | 1.9.0+       |
 | 1.1                                                           | 1.1.2                          | 1.6.0+       |
 | 1.0                                                           | 1.0                            | 1.6.0+       |
 

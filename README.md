@@ -2,9 +2,9 @@
 > - _[Android Cache Fix Gradle Plugin][android-cache-fix-plugin]_
 > - _[Common Custom User Data Gradle Plugin][ccud-gradle-plugin]_
 > - _[Common Custom User Data Maven Extension][ccud-maven-extension]_
-> - _[Common Custom User Data sbt Plugin][ccud-sbt-plugin]_ (this repository)_
+> - _[Common Custom User Data sbt Plugin][ccud-sbt-plugin] (this repository)_
 > - _[Develocity Build Configuration Samples][develocity-build-config-samples]_
-> - _[Develocity Build Validation Scripts][develocity-build-validation-scripts]
+> - _[Develocity Build Validation Scripts][develocity-build-validation-scripts]_
 > - _[Develocity Open Source Projects][develocity-oss-projects]_
 > - _[Quarkus Build Caching Extension][quarkus-build-caching-extension]_
 

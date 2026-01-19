@@ -1,8 +1,6 @@
 name: Verify Build
 
 on: [ push, pull_request, workflow_dispatch ]
-permissions:
-  contents: read
 
 permissions:
   contents: read
@@ -53,15 +51,15 @@ jobs:
       - name: Create a test project
         run: |
           mkdir -p ${{ runner.temp }}/ccud-sbt-integration-test/project
-          
+
           echo """resolvers += Resolver.mavenLocal
             addSbtPlugin(\"com.gradle\" % \"sbt-develocity\" % \"1+\")
             addSbtPlugin(\"com.gradle\" % \"sbt-develocity-common-custom-user-data\" % \"1+\")
           """ > ${{ runner.temp }}/ccud-sbt-integration-test/project/plugins.sbt
-          
+
           echo """ThisBuild / scalaVersion := \"2.12.15\"
             ThisBuild / organization := \"com.gradle\"
-            
+
             ThisBuild / develocityConfiguration ~= { prev =>
               prev
                 .withServer(

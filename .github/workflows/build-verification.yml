@@ -20,7 +20,7 @@ jobs:
       - name: Setup sbt installer
         uses: sbt/setup-sbt@v1.1.15
       - name: Build and publish to M2 with sbt
-        run: sbt clean test scripted publishM2
+        run: sbt scalafmtCheckAll clean test scripted publishM2
         env:
           DEVELOCITY_ACCESS_KEY: ${{ secrets.DV_SOLUTIONS_ACCESS_KEY }}
       - name: Upload published plugin

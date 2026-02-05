@@ -45,7 +45,7 @@ checkTags := {
 }
 
 checkLinks := {
-  val links = develocityConfiguration.value.buildScan.links
+  val links = fullDevelocityConfiguration.value.buildScan.links
   val expectedLinks = ownLinks
 
   expectedLinks.foreach { case (label, url) =>

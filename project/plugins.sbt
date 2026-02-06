@@ -1,4 +1,4 @@
-addSbtPlugin("com.gradle" % "sbt-develocity" % "1.3")
+addSbtPlugin("com.gradle" % "sbt-develocity" % "1.4.5")
 addSbtPlugin("com.github.sbt" % "sbt-dynver" % "5.1.0")
 addSbtPlugin("com.github.sbt" % "sbt-pgp" % "2.2.1")
 addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.5.2")

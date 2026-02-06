@@ -1,1 +1,0 @@
-- [FIX] Starting with sbt-develocity v1.4.5, users can't accidentally override the configuration added by this plugin.

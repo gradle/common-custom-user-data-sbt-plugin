@@ -55,7 +55,10 @@ class UtilsTest extends AnyFlatSpec with Matchers with TableDrivenPropertyChecks
     ("https://user%1Fname:password@acme.com/acme-inc/my-project", "https://******@acme.com/acme-inc/my-project"),
     ("https://user:secret%1Fpassword@acme.com/acme-inc/my-project", "https://******@acme.com/acme-inc/my-project"),
     ("https://user:secret%1password@acme.com/acme-inc/my-project", null),
-    ("git@github.com:gradle/common-custom-user-data-gradle-plugin.git", "git@github.com:gradle/common-custom-user-data-gradle-plugin.git")
+    (
+      "git@github.com:gradle/common-custom-user-data-gradle-plugin.git",
+      "git@github.com:gradle/common-custom-user-data-gradle-plugin.git"
+    )
   )
 
 }

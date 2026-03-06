@@ -200,23 +200,41 @@ private class CustomBuildScanEnhancements(serverConfig: Server, logger: Logger) 
     }
   }
 
+  private val PullRequestRefPattern = """^(\d+)/merge$""".r
+
   private def captureGitHubActions(implicit env: Env): BuildScan => BuildScan = {
     if (!isGitHubActions) identity
     else {
+      val serverUrl = env.envVariable[URL]("GITHUB_SERVER_URL")
+      val gitRepository = env.envVariable[String]("GITHUB_REPOSITORY")
+
       val buildUrl = for {
-        url <- env.envVariable[URL]("GITHUB_SERVER_URL")
-        repository <- env.envVariable[String]("GITHUB_REPOSITORY")
+        url <- serverUrl
+        repository <- gitRepository
         runId <- env.envVariable[String]("GITHUB_RUN_ID")
       } yield sbt.url(s"$url/$repository/actions/runs/$runId")
+
+      val headRef = env.envVariable[String]("GITHUB_HEAD_REF").filter(_.nonEmpty)
+      val pullRequestUrl = for {
+        url <- serverUrl
+        repository <- gitRepository
+        _ <- headRef
+        refName <- env.envVariable[String]("GITHUB_REF_NAME")
+        prNumber <- refName match {
+          case PullRequestRefPattern(num) => Some(num)
+          case _ => None
+        }
+      } yield sbt.url(s"$url/$repository/pull/$prNumber")
 
       val ops = Seq(
         (bs: BuildScan) => bs.withValue("CI provider", "GitHub Actions"),
         ifDefined(buildUrl)(_.withLink("GitHub Actions build", _)),
+        ifDefined(pullRequestUrl)(_.withLink("GitHub pull request", _)),
         ifDefined(env.envVariable[String]("GITHUB_WORKFLOW"))(withCustomValueAndSearchLink(_, "CI workflow", _)),
         ifDefined(env.envVariable[String]("GITHUB_RUN_ID"))(withCustomValueAndSearchLink(_, "CI run", _)),
         ifDefined(env.envVariable[String]("GITHUB_ACTION"))(withCustomValueAndSearchLink(_, "CI step", _)),
         ifDefined(env.envVariable[String]("GITHUB_JOB"))(withCustomValueAndSearchLink(_, "CI job", _)),
-        ifDefined(env.envVariable[String]("GITHUB_HEAD_REF").filter(_.nonEmpty))(_.withValue("PR branch", _))
+        ifDefined(headRef)(_.withValue("PR branch", _))
       )
       Function.chain(ops)
     }

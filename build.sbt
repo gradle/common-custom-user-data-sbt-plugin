@@ -1,6 +1,6 @@
 import Dependencies.*
 
-ThisBuild / scalaVersion := "2.12.15"
+ThisBuild / scalaVersion := "2.13.18"
 ThisBuild / organization := "com.gradle"
 ThisBuild / organizationName := "Gradle Inc."
 

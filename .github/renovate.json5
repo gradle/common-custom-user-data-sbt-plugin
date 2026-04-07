@@ -15,7 +15,7 @@
       "groupName": "GitHub Actions"
     },
     {
-      "matchPackageNames": ["scala"],
+      "matchPackageNames": ["org.scala-lang:scala-library"],
       "allowedVersions": "~2.12"
     }
   ]

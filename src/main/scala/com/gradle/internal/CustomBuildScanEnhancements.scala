@@ -384,12 +384,12 @@ private class CustomBuildScanEnhancements(serverConfig: Server, logger: Logger) 
     val gemini = env.envVariable[String]("GEMINI_CLI")
 
     val ops = Seq(
-      ifDefined(claudeCode)((bs, _) => bs.withTag("AI Agent").withValue("AI Agent", "Claude Code")),
+      ifDefined(claudeCode)((bs, _) => bs.withTag("AI").withValue("AI agent", "Claude Code")),
       if (codexSandbox.isDefined || codexThreadId.isDefined)
-        (bs: BuildScan) => bs.withTag("AI Agent").withValue("AI Agent", "Codex")
+        (bs: BuildScan) => bs.withTag("AI").withValue("AI agent", "Codex")
       else identity[BuildScan] _,
-      ifDefined(openCode)((bs, _) => bs.withTag("AI Agent").withValue("AI Agent", "OpenCode")),
-      ifDefined(gemini)((bs, _) => bs.withTag("AI Agent").withValue("AI Agent", "Gemini CLI"))
+      ifDefined(openCode)((bs, _) => bs.withTag("AI").withValue("AI agent", "OpenCode")),
+      ifDefined(gemini)((bs, _) => bs.withTag("AI").withValue("AI agent", "Gemini CLI"))
     )
     Function.chain(ops)
   }

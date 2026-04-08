@@ -22,6 +22,11 @@
       "matchPackageNames": ["com.gradle:sbt-develocity"],
       "matchFileNames": ["project/Dependencies.scala"],
       "enabled": false
+    },
+    {
+      "matchPackageNames": ["sbt"],
+      "matchFileNames": ["src/sbt-test/ccud/transformers/project/build.properties"],
+      "enabled": false
     }
   ]
 }

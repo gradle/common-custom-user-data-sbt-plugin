@@ -24,7 +24,7 @@
       "enabled": false
     },
     {
-      "matchPackageNames": ["sbt"],
+      "matchPackageNames": ["sbt/sbt"],
       "matchFileNames": ["src/sbt-test/ccud/transformers/project/build.properties"],
       "enabled": false
     }

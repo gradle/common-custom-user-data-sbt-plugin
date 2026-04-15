@@ -1,5 +1,5 @@
 addSbtPlugin("com.gradle" % "sbt-develocity" % "1.4.5")
 addSbtPlugin("com.github.sbt" % "sbt-dynver" % "5.1.1")
 addSbtPlugin("com.github.sbt" % "sbt-pgp" % "2.3.1")
-addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.5.6")
+addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.6.0")
 addSbtPlugin("com.gradle" % "sbt-develocity-common-custom-user-data" % "1.3")

@@ -1,17 +1,18 @@
 > _This repository is maintained by the Develocity Solutions team, as one of several publicly available repositories:_
-> - _[Develocity Build Configuration Samples][dv-build-config-samples]_
-> - _[Develocity Build Validation Scripts][dv-build-validation-scripts]_
-> - _[Develocity Open Source Projects][dv-oss-projects]_
-> - _[Common Custom User Data Maven Extension][ccud-maven-extension]_
-> - _[Common Custom User Data Gradle Plugin][ccud-gradle-plugin]_
-> - _[Common Custom User Data sbt Plugin][ccud-sbt-plugin]_ (this repository)
 > - _[Android Cache Fix Gradle Plugin][android-cache-fix-plugin]_
+> - _[Common Custom User Data Gradle Plugin][ccud-gradle-plugin]_
+> - _[Common Custom User Data Maven Extension][ccud-maven-extension]_
+> - _[Common Custom User Data sbt Plugin][ccud-sbt-plugin] (this repository)_
+> - _[Develocity Build Configuration Samples][develocity-build-config-samples]_
+> - _[Develocity Build Validation Scripts][develocity-build-validation-scripts]_
+> - _[Develocity Open Source Projects][develocity-oss-projects]_
+> - _[Quarkus Build Caching Extension][quarkus-build-caching-extension]_
 
 # sbt Develocity Common Custom User Data plugin
 
 
 [![Verify Build](https://github.com/gradle/common-custom-user-data-sbt-plugin/actions/workflows/build-verification.yml/badge.svg?branch=main)](https://github.com/gradle/common-custom-user-data-sbt-plugin/actions/workflows/build-verification.yml)
-[![Maven Central](https://img.shields.io/maven-central/v/com.gradle/sbt-develocity-common-custom-user-data_2.12_1.0)](https://central.sonatype.com/artifact/com.gradle/sbt-develocity-common-custom-user-data)
+[![Maven Central](https://img.shields.io/maven-central/v/com.gradle/sbt-develocity-common-custom-user-data_2.12_1.0)](https://central.sonatype.com/artifact/com.gradle/sbt-develocity-common-custom-user-data_2.12_1.0)
 [![Revved up by Develocity](https://img.shields.io/badge/Revved%20up%20by-Develocity-06A0CE?logo=Gradle&labelColor=02303A)](https://ge.solutions-team.gradle.com/scans)
 
 The sbt Develocity Common Custom User Data plugin enhances published Build Scan data
@@ -29,7 +30,7 @@ Develocity plugin to be applied in your build to function.
 To activate the sbt Develocity Common Custom User Data plugin, add it to your project's `project/plugins.sbt` file, where you've already declared the main sbt Develocity plugin.
 
 ```
-addSbtPlugin("com.gradle" % "sbt-develocity-common-custom-user-data" % "1.1")
+addSbtPlugin("com.gradle" % "sbt-develocity-common-custom-user-data" % "1.3")
 ```
 
 For an example, see the [plugins.sbt](./project/plugins.sbt) file.
@@ -40,8 +41,9 @@ This table details the version compatibility of the sbt Develocity Common Custom
 
 | sbt Develocity Common Custom User Data plugin (this) versions | sbt Develocity plugin versions | sbt versions |
 |---------------------------------------------------------------|--------------------------------|--------------|
-| 1.0                                                           | 1.0                            | 1.6.0+       |
+| 1.3                                                           | 1.3                            | 1.9.0+       |
 | 1.1                                                           | 1.1.2                          | 1.6.0+       |
+| 1.0                                                           | 1.0                            | 1.6.0+       |
 
 ## Captured data
 
@@ -105,12 +107,13 @@ Visit our website to learn more about [Develocity][develocity].
 
 The sbt Develocity Common Custom User Data plugin is open-source software released under the [Apache 2.0 License][apache-license].
 
-[dv-build-config-samples]: https://github.com/gradle/develocity-build-config-samples
-[dv-build-validation-scripts]: https://github.com/gradle/develocity-build-validation-scripts
-[dv-oss-projects]: https://github.com/gradle/develocity-oss-projects
+[android-cache-fix-plugin]: https://github.com/gradle/android-cache-fix-gradle-plugin
 [ccud-gradle-plugin]: https://github.com/gradle/common-custom-user-data-gradle-plugin
 [ccud-maven-extension]: https://github.com/gradle/common-custom-user-data-maven-extension
 [ccud-sbt-plugin]: https://github.com/gradle/common-custom-user-data-sbt-plugin
-[android-cache-fix-plugin]: https://github.com/gradle/android-cache-fix-gradle-plugin
+[develocity-build-config-samples]: https://github.com/gradle/develocity-build-config-samples
+[develocity-build-validation-scripts]: https://github.com/gradle/develocity-build-validation-scripts
+[develocity-oss-projects]: https://github.com/gradle/develocity-oss-projects
+[quarkus-build-caching-extension]: https://github.com/gradle/quarkus-build-caching-extension
 [develocity]: https://gradle.com/develocity
 [apache-license]: https://www.apache.org/licenses/LICENSE-2.0.html

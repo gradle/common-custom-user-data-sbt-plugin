@@ -1,6 +1,6 @@
 import Dependencies.*
 
-ThisBuild / scalaVersion := "2.12.15"
+ThisBuild / scalaVersion := "2.12.21"
 ThisBuild / organization := "com.gradle"
 ThisBuild / organizationName := "Gradle Inc."
 
@@ -34,9 +34,21 @@ lazy val sbtCommonCustomUserDataPlugin = (project in file("."))
     libraryDependencies ++= Seq(
       scalaTest % Test
     ),
+    Compile / packageBin / mappings ++= Seq(
+      baseDirectory.value / "LICENSE" -> "LICENSE",
+      baseDirectory.value / "release" / "distribution" / "NOTICE" -> "NOTICE"
+    ),
+    Compile / packageDoc / mappings ++= Seq(
+      baseDirectory.value / "LICENSE" -> "LICENSE",
+      baseDirectory.value / "release" / "distribution" / "NOTICE" -> "NOTICE"
+    ),
+    Compile / packageSrc / mappings ++= Seq(
+      baseDirectory.value / "LICENSE" -> "LICENSE",
+      baseDirectory.value / "release" / "distribution" / "NOTICE" -> "NOTICE"
+    ),
     pluginCrossBuild / sbtVersion := {
       scalaBinaryVersion.value match {
-        case "2.12" => "1.6.0" // set minimum sbt version - best to keep it in sync with the GE plugin
+        case "2.12" => "1.6.0" // set minimum sbt version - best to keep it in sync with the Develocity plugin's minimum sbt version
       }
     },
     addSbtPlugin(develocityPlugin),
@@ -69,7 +81,6 @@ ThisBuild / developers := List(
 ThisBuild / pomIncludeRepository := { _ => false }
 ThisBuild / publishMavenStyle := true
 ThisBuild / versionScheme := Some("semver-spec")
-ThisBuild / sbtPluginPublishLegacyMavenStyle := true
 ThisBuild / publishTo := {
   val centralSnapshots = "https://central.sonatype.com/repository/maven-snapshots/"
   if (isSnapshot.value) Some("central-snapshots" at centralSnapshots)

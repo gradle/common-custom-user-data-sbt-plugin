@@ -1,0 +1,32 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    "github>gradle/renovate-agent//presets/dv-automerge-minor.json5",
+    ":disableDependencyDashboard"
+  ],
+  "packageRules": [
+    {
+      "matchManagers": ["sbt"],
+      "groupName": "sbt dependencies"
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "groupName": "GitHub Actions"
+    },
+    {
+      "matchPackageNames": ["org.scala-lang:scala-library"],
+      "allowedVersions": "~2.12"
+    },
+    {
+      "matchPackageNames": ["com.gradle:sbt-develocity"],
+      "matchFileNames": ["project/Dependencies.scala"],
+      "enabled": false
+    },
+    {
+      "matchPackageNames": ["sbt/sbt"],
+      "matchFileNames": ["src/sbt-test/ccud/transformers/project/build.properties"],
+      "enabled": false
+    }
+  ]
+}

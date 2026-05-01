@@ -65,7 +65,8 @@ private class CustomBuildScanEnhancements(serverConfig: Server, logger: Logger) 
       captureIde,
       captureCiOrLocal,
       captureCiMetadata,
-      captureGitMetadata
+      captureGitMetadata,
+      captureAgentMetadata
     )
     Function.chain(ops)(originBuildScan)
   }
@@ -373,6 +374,26 @@ private class CustomBuildScanEnhancements(serverConfig: Server, logger: Logger) 
       )
       Function.chain(ops)
     }
+  }
+
+  private def captureAgentMetadata(implicit env: Env): BuildScan => BuildScan = {
+    val claudeCode = env.envVariable[String]("CLAUDECODE")
+    // Codex environment variables are not officially documented.
+    // This is best effort detection until something more official is implemented by Codex.
+    val codexSandbox = env.envVariable[String]("CODEX_SANDBOX_NETWORK_DISABLED")
+    val codexThreadId = env.envVariable[String]("CODEX_THREAD_ID")
+    val openCode = env.envVariable[String]("OPENCODE")
+    val gemini = env.envVariable[String]("GEMINI_CLI")
+
+    val ops = Seq(
+      ifDefined(claudeCode)((bs, _) => bs.withTag("AI").withValue("AI agent", "Claude Code")),
+      if (codexSandbox.isDefined || codexThreadId.isDefined)
+        (bs: BuildScan) => bs.withTag("AI").withValue("AI agent", "Codex")
+      else identity[BuildScan] _,
+      ifDefined(openCode)((bs, _) => bs.withTag("AI").withValue("AI agent", "OpenCode")),
+      ifDefined(gemini)((bs, _) => bs.withTag("AI").withValue("AI agent", "Gemini CLI"))
+    )
+    Function.chain(ops)
   }
 
   private lazy val isGitInstalled: Boolean = {

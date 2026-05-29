@@ -18,7 +18,7 @@ jobs:
           java-version: '8'
           distribution: 'temurin'
       - name: Setup sbt installer
-        uses: sbt/setup-sbt@4ed7b7ec4bfa2074fe48554c09e341267397247c # v1.2.0
+        uses: sbt/setup-sbt@af116cce31c00823d3903ce687f9cda3a4f19f1b # v1.2.1
       - name: Build and publish to M2 with sbt
         run: sbt scalafmtCheckAll clean test scripted publishM2
         env:
@@ -42,7 +42,7 @@ jobs:
           java-version: '8'
           distribution: 'temurin'
       - name: Setup sbt installer
-        uses: sbt/setup-sbt@4ed7b7ec4bfa2074fe48554c09e341267397247c # v1.2.0
+        uses: sbt/setup-sbt@af116cce31c00823d3903ce687f9cda3a4f19f1b # v1.2.1
       - name: Download plugin to maven local
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:

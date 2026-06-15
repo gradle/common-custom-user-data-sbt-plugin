@@ -19,6 +19,11 @@
       "allowedVersions": "~2.12"
     },
     {
+      // The plugin does not yet support sbt 2.x, so stay on the 1.x line.
+      "matchPackageNames": ["sbt/sbt"],
+      "allowedVersions": "<2.0.0"
+    },
+    {
       "matchPackageNames": ["com.gradle:sbt-develocity"],
       "matchFileNames": ["project/Dependencies.scala"],
       "enabled": false

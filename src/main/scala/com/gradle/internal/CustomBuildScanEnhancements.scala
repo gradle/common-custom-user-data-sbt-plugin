@@ -382,6 +382,7 @@ private class CustomBuildScanEnhancements(serverConfig: Server, logger: Logger) 
     // This is best effort detection until something more official is implemented by Codex.
     val codexSandbox = env.envVariable[String]("CODEX_SANDBOX_NETWORK_DISABLED")
     val codexThreadId = env.envVariable[String]("CODEX_THREAD_ID")
+    val cursor = env.envVariable[String]("CURSOR_AGENT")
     val openCode = env.envVariable[String]("OPENCODE")
     val gemini = env.envVariable[String]("GEMINI_CLI")
 
@@ -390,6 +391,7 @@ private class CustomBuildScanEnhancements(serverConfig: Server, logger: Logger) 
       if (codexSandbox.isDefined || codexThreadId.isDefined)
         (bs: BuildScan) => bs.withTag("AI").withValue("AI agent", "Codex")
       else identity[BuildScan] _,
+      ifDefined(cursor)((bs, _) => bs.withTag("AI").withValue("AI agent", "Cursor")),
       ifDefined(openCode)((bs, _) => bs.withTag("AI").withValue("AI agent", "OpenCode")),
       ifDefined(gemini)((bs, _) => bs.withTag("AI").withValue("AI agent", "Gemini CLI"))
     )

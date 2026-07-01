@@ -1,1 +1,2 @@
-- [NEW] Capture Cursor as an AI agent via the `CURSOR_AGENT` environment variable
+- [NEW] Add AI tag to the Build Scan when invoked by an AI Agent
+- [NEW] Add custom value to the Build Scan indicating which AI Agent invoked the build

@@ -1,2 +1,1 @@
-- [NEW] Add AI tag to the Build Scan when invoked by an AI Agent
-- [NEW] Add custom value to the Build Scan indicating which AI Agent invoked the build
+- [NEW] TBD

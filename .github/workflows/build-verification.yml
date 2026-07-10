@@ -52,6 +52,9 @@ jobs:
         run: |
           mkdir -p ${{ runner.temp }}/ccud-sbt-integration-test/project
 
+          # The plugin doesn't support sbt 2
+          echo "sbt.version=1.12.13" > ${{ runner.temp }}/ccud-sbt-integration-test/project/build.properties
+
           echo """resolvers += Resolver.mavenLocal
             addSbtPlugin(\"com.gradle\" % \"sbt-develocity\" % \"1+\")
             addSbtPlugin(\"com.gradle\" % \"sbt-develocity-common-custom-user-data\" % \"1+\")

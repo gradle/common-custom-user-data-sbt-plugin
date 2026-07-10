@@ -19,6 +19,9 @@ jobs:
           distribution: 'temurin'
       - name: Setup sbt installer
         uses: sbt/setup-sbt@66fb4376e81982c7d92a4074170846fff88e2e30 # v1.5.0
+        with:
+          # Keep the 1.x runner to preserve JDK 8 testing
+          sbt-runner-version: 1.12.13
       - name: Build and publish to M2 with sbt
         run: sbt scalafmtCheckAll clean test scripted publishM2
         env:
@@ -43,6 +46,9 @@ jobs:
           distribution: 'temurin'
       - name: Setup sbt installer
         uses: sbt/setup-sbt@66fb4376e81982c7d92a4074170846fff88e2e30 # v1.5.0
+        with:
+          # Keep the 1.x runner to preserve JDK 8 testing
+          sbt-runner-version: 1.12.13
       - name: Download plugin to maven local
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:

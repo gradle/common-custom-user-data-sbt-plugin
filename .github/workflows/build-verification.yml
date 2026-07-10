@@ -13,12 +13,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
       - name: Set up JDK 8
-        uses: actions/setup-java@1bcf9fb12cf4aa7d266a90ae39939e61372fe520 # v5
+        uses: actions/setup-java@0f481fcb613427c0f801b606911222b5b6f3083a # v5
         with:
           java-version: '8'
           distribution: 'temurin'
       - name: Setup sbt installer
-        uses: sbt/setup-sbt@3afe9cf056c5d139bfc46579af1192d77a2f0821 # v1.4.0
+        uses: sbt/setup-sbt@66fb4376e81982c7d92a4074170846fff88e2e30 # v1.5.0
+        with:
+          # Keep the 1.x runner to preserve JDK 8 testing
+          sbt-runner-version: 1.12.13
       - name: Build and publish to M2 with sbt
         run: sbt scalafmtCheckAll clean test scripted publishM2
         env:
@@ -37,12 +40,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
       - name: Set up JDK 8
-        uses: actions/setup-java@1bcf9fb12cf4aa7d266a90ae39939e61372fe520 # v5
+        uses: actions/setup-java@0f481fcb613427c0f801b606911222b5b6f3083a # v5
         with:
           java-version: '8'
           distribution: 'temurin'
       - name: Setup sbt installer
-        uses: sbt/setup-sbt@3afe9cf056c5d139bfc46579af1192d77a2f0821 # v1.4.0
+        uses: sbt/setup-sbt@66fb4376e81982c7d92a4074170846fff88e2e30 # v1.5.0
+        with:
+          # Keep the 1.x runner to preserve JDK 8 testing
+          sbt-runner-version: 1.12.13
       - name: Download plugin to maven local
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
@@ -51,6 +57,9 @@ jobs:
       - name: Create a test project
         run: |
           mkdir -p ${{ runner.temp }}/ccud-sbt-integration-test/project
+
+          # Match the plugin's sbt version
+          cp project/build.properties ${{ runner.temp }}/ccud-sbt-integration-test/project/build.properties
 
           echo """resolvers += Resolver.mavenLocal
             addSbtPlugin(\"com.gradle\" % \"sbt-develocity\" % \"1+\")

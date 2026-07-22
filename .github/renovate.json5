@@ -5,6 +5,21 @@
     "github>gradle/renovate-agent//presets/dv-automerge-minor.json5",
     ":disableDependencyDashboard"
   ],
+  "customManagers": [
+    {
+      // Keep the Develocity sbt plugin Javadoc link in README.md pointed at the
+      // latest published version. This tracks the artifact independently of the
+      // build-time `com.gradle:sbt-develocity` dependency in
+      // project/Dependencies.scala, which is deliberately pinned (and disabled below).
+      "customType": "regex",
+      "fileMatch": ["^README\\.md$"],
+      "matchStrings": [
+        "docs\\.develocity\\.ai/downloads/sbt-plugin-javadoc/(?<currentValue>\\d+\\.\\d+\\.\\d+)/"
+      ],
+      "depNameTemplate": "com.gradle:sbt-develocity",
+      "datasourceTemplate": "sbt-plugin"
+    }
+  ],
   "packageRules": [
     {
       "matchManagers": ["sbt"],

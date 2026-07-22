@@ -93,7 +93,7 @@ This approach has a number of benefits:
 If your customized plugin includes all necessary Develocity configurations, consuming projects will automatically gain the full benefits of Develocity by applying your plugin.
 The project sources offer an excellent template for creating your own plugin.
 
-Refer to the [Javadoc](https://docs.gradle.com/enterprise/sbt-plugin/api/com/gradle/develocity/agent/sbt/api/configuration/) for more details on the key types available for use.
+Refer to the [Javadoc](https://docs.develocity.ai/downloads/sbt-plugin-javadoc/1.4.5/) for more details on the key types available for use.
 
 ## Changelog
 
@@ -115,5 +115,5 @@ The sbt Develocity Common Custom User Data plugin is open-source software releas
 [develocity-build-validation-scripts]: https://github.com/gradle/develocity-build-validation-scripts
 [develocity-oss-projects]: https://github.com/gradle/develocity-oss-projects
 [quarkus-build-caching-extension]: https://github.com/gradle/quarkus-build-caching-extension
-[develocity]: https://gradle.com/develocity
+[develocity]: https://develocity.ai
 [apache-license]: https://www.apache.org/licenses/LICENSE-2.0.html

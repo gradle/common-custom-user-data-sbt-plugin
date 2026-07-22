@@ -16,8 +16,8 @@
       "matchStrings": [
         "docs\\.develocity\\.ai/downloads/sbt-plugin-javadoc/(?<currentValue>\\d+\\.\\d+\\.\\d+)/"
       ],
-      "depNameTemplate": "com.gradle:sbt-develocity_2.12_1.0",
-      "datasourceTemplate": "maven"
+      "depNameTemplate": "com.gradle:sbt-develocity",
+      "datasourceTemplate": "sbt-plugin"
     }
   ],
   "packageRules": [

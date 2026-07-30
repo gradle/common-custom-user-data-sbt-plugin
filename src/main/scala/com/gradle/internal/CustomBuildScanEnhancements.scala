@@ -385,6 +385,8 @@ private class CustomBuildScanEnhancements(serverConfig: Server, logger: Logger) 
     val cursor = env.envVariable[String]("CURSOR_AGENT")
     val openCode = env.envVariable[String]("OPENCODE")
     val gemini = env.envVariable[String]("GEMINI_CLI")
+    val copilotCli = env.envVariable[String]("COPILOT_CLI")
+    val copilotAgent = env.envVariable[String]("COPILOT_AGENT")
 
     val ops = Seq(
       ifDefined(claudeCode)((bs, _) => bs.withTag("AI").withValue("AI agent", "Claude Code")),
@@ -393,7 +395,10 @@ private class CustomBuildScanEnhancements(serverConfig: Server, logger: Logger) 
       else identity[BuildScan] _,
       ifDefined(cursor)((bs, _) => bs.withTag("AI").withValue("AI agent", "Cursor")),
       ifDefined(openCode)((bs, _) => bs.withTag("AI").withValue("AI agent", "OpenCode")),
-      ifDefined(gemini)((bs, _) => bs.withTag("AI").withValue("AI agent", "Gemini CLI"))
+      ifDefined(gemini)((bs, _) => bs.withTag("AI").withValue("AI agent", "Gemini CLI")),
+      if (copilotCli.isDefined || copilotAgent.isDefined)
+        (bs: BuildScan) => bs.withTag("AI").withValue("AI agent", "Copilot")
+      else identity[BuildScan] _
     )
     Function.chain(ops)
   }

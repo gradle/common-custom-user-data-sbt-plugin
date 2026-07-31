@@ -39,11 +39,13 @@ For an example, see the [plugins.sbt](./project/plugins.sbt) file.
 
 This table details the version compatibility of the sbt Develocity Common Custom User Data plugin with the sbt Develocity plugin.
 
-| sbt Develocity Common Custom User Data plugin (this) versions | sbt Develocity plugin versions | sbt versions |
-|---------------------------------------------------------------|--------------------------------|--------------|
-| 1.3                                                           | 1.3                            | 1.9.0+       |
-| 1.1                                                           | 1.1.2                          | 1.6.0+       |
-| 1.0                                                           | 1.0                            | 1.6.0+       |
+| Common Custom User Data sbt plugin versions | Develocity sbt plugin versions |
+| ------------------------------------------- | ------------------------------ |
+| `1.3+`                                      | `1.3+`                         |
+| `1.1` - `1.2.1`                             | `1.1.2+`                       |
+| `1.0`                                       | `1.0+`                         |
+
+The above chart captures the minimum compatible versions. For the sbt versions that each sbt Develocity plugin version supports, see [Develocity Version Compatibility](https://docs.develocity.ai/current/miscellaneous/compatibility/#sbt-compatibility).
 
 ## Captured data
 

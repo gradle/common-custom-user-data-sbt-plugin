@@ -13,7 +13,7 @@
 
 [![Verify Build](https://github.com/gradle/common-custom-user-data-sbt-plugin/actions/workflows/build-verification.yml/badge.svg?branch=main)](https://github.com/gradle/common-custom-user-data-sbt-plugin/actions/workflows/build-verification.yml)
 [![Maven Central](https://img.shields.io/maven-central/v/com.gradle/sbt-develocity-common-custom-user-data_2.12_1.0)](https://central.sonatype.com/artifact/com.gradle/sbt-develocity-common-custom-user-data_2.12_1.0)
-[![Revved up by Develocity](https://img.shields.io/badge/Revved%20up%20by-Develocity-06A0CE?logo=Gradle&labelColor=02303A)](https://ge.solutions-team.gradle.com/scans)
+[![Revved up by Develocity](https://img.shields.io/badge/Revved%20up%20by-Develocity-06A0CE?logo=Gradle&labelColor=02303A)](https://solutions.develocity.cloud/scans)
 
 The sbt Develocity Common Custom User Data plugin enhances published Build Scan data
 by adding a set of tags, links and custom values that have proven to be useful for many projects building with Develocity.
@@ -69,7 +69,7 @@ You can use the system properties and environment variables to override Develoci
 to modify the build scripts. For example, to change the Develocity server when running a build:
 
 ```bash
-sbt -Ddevelocity.url=https://ge.solutions-team.gradle.com/ run
+sbt -Ddevelocity.url=https://solutions.develocity.cloud/ run
 ```
 
 <details>

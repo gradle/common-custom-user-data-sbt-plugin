@@ -11,7 +11,7 @@ sbtPlugin := true
 ThisBuild / develocityConfiguration ~= { prev =>
   prev
     .withServer(
-      prev.server.withUrl(Some(url("https://solutions.develocity.cloud")))
+      prev.server.withUrl(Some(url("https://ge.solutions-team.gradle.com")))
     )
     .withBuildScan(
       prev.buildScan

@@ -74,7 +74,7 @@ ThisBuild / developers := List(
     id = "gradle",
     name = "The Gradle team",
     email = "info@gradle.com",
-    url = url("https://gradle.com")
+    url = url("https://develocity.ai")
   )
 )
 // Remove all additional repository other than Maven Central from POM
